@@ -157,7 +157,7 @@ export function courseHref(course: Course) {
 }
 
 export type CourseState =
-  /** Finished — it stays open, so it can be practised again. */
+  /** Finished — it stays open, so it can be practiced again. */
   | "done"
   /** The one to do next. */
   | "current"

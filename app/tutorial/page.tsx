@@ -75,9 +75,18 @@ export default function TutorialPage() {
     return { name: saved.name, age: saved.age, likes: saved.likes };
   });
 
+  /* Saying no is a real answer. When a child declines a question, Sprout says
+     so out loud before moving on, rather than silently skipping ahead. */
+  const [declined, setDeclined] = useState<null | "name" | "age" | "likes">(null);
+
   const index = STEPS.indexOf(step);
   const go = (to: Step) => setStep(to);
   const next = () => go(STEPS[Math.min(index + 1, STEPS.length - 1)]);
+  const decline = (question: "name" | "age" | "likes") => setDeclined(question);
+  const carryOn = () => {
+    setDeclined(null);
+    next();
+  };
 
   const finish = () => {
     const saved = saveProfile({ ...draft, tutorialDone: true });
@@ -127,25 +136,27 @@ export default function TutorialPage() {
 
       <div className="tut__stage">
         <section className="tut__card" aria-live="polite">
-          {step === "hello" && <Hello onNext={next} />}
-          {step === "name" && (
+          {declined && <Declined question={declined} onNext={carryOn} />}
+          {!declined && step === "hello" && <Hello onNext={next} />}
+          {!declined && step === "name" && (
             <NameStep
               value={draft.name}
               onChange={(name) => setDraft((current) => ({ ...current, name }))}
               onNext={next}
+              onDecline={() => decline("name")}
             />
           )}
-          {step === "age" && (
+          {!declined && step === "age" && (
             <AgeStep
               value={draft.age}
               onPick={(age) => {
                 setDraft((current) => ({ ...current, age }));
                 next();
               }}
-              onSkip={next}
+              onDecline={() => decline("age")}
             />
           )}
-          {step === "likes" && (
+          {!declined && step === "likes" && (
             <LikesStep
               value={draft.likes}
               onToggle={(id) =>
@@ -157,12 +168,13 @@ export default function TutorialPage() {
                 }))
               }
               onNext={next}
+              onDecline={() => decline("likes")}
             />
           )}
-          {step === "cards" && <CardsStep name={draft.name} onNext={next} />}
-          {step === "voice" && <VoiceStep onNext={next} />}
-          {step === "break" && <BreakStep onNext={next} />}
-          {step === "done" && <DoneStep name={draft.name} onFinish={finish} />}
+          {!declined && step === "cards" && <CardsStep name={draft.name} onNext={next} />}
+          {!declined && step === "voice" && <VoiceStep onNext={next} />}
+          {!declined && step === "break" && <BreakStep onNext={next} />}
+          {!declined && step === "done" && <DoneStep name={draft.name} onFinish={finish} />}
         </section>
       </div>
     </main>
@@ -184,7 +196,7 @@ function Hello({ onNext }: { onNext: () => void }) {
   return (
     <>
       <Bubble>Hi! I&rsquo;m Sprout.</Bubble>
-      <h1 className="tut__title display">Let&rsquo;s practise talking together</h1>
+      <h1 className="tut__title display">Let&rsquo;s practice talking together</h1>
       <p className="tut__line">
         First I would like to know you a little. Then I will show you how this works.
         It is short, and you can stop whenever you want.
@@ -200,10 +212,12 @@ function NameStep({
   value,
   onChange,
   onNext,
+  onDecline,
 }: {
   value: string;
   onChange: (name: string) => void;
   onNext: () => void;
+  onDecline: () => void;
 }) {
   return (
     <>
@@ -229,7 +243,7 @@ function NameStep({
           That&rsquo;s me <ArrowRight aria-hidden="true" />
         </button>
       </form>
-      <button type="button" className="tut__quiet" onClick={onNext}>I&rsquo;d rather not say</button>
+      <button type="button" className="tut__quiet" onClick={onDecline}>I&rsquo;d rather not say</button>
       <p className="tut__note">Only this device remembers your name. A grown-up can clear it at any time.</p>
     </>
   );
@@ -238,11 +252,11 @@ function NameStep({
 function AgeStep({
   value,
   onPick,
-  onSkip,
+  onDecline,
 }: {
   value: number | null;
   onPick: (age: number) => void;
-  onSkip: () => void;
+  onDecline: () => void;
 }) {
   return (
     <>
@@ -259,7 +273,7 @@ function AgeStep({
           </button>
         ))}
       </div>
-      <button type="button" className="tut__quiet" onClick={onSkip}>Skip this one</button>
+      <button type="button" className="tut__quiet" onClick={onDecline}>I&rsquo;d rather not say</button>
     </>
   );
 }
@@ -268,10 +282,12 @@ function LikesStep({
   value,
   onToggle,
   onNext,
+  onDecline,
 }: {
   value: string[];
   onToggle: (id: string) => void;
   onNext: () => void;
+  onDecline: () => void;
 }) {
   return (
     <>
@@ -296,6 +312,26 @@ function LikesStep({
       </div>
       <button type="button" className="tut__go" onClick={onNext}>
         Done <ArrowRight aria-hidden="true" />
+      </button>
+      <button type="button" className="tut__quiet" onClick={onDecline}>I&rsquo;d rather not say</button>
+    </>
+  );
+}
+
+/** What Sprout says when a child would rather not answer. */
+function Declined({ question, onNext }: { question: "name" | "age" | "likes"; onNext: () => void }) {
+  const lines = {
+    name: "You do not have to tell me your name.",
+    age: "You do not have to tell me your age.",
+    likes: "You can tell me another day.",
+  };
+  return (
+    <>
+      <Bubble>That&rsquo;s fine.</Bubble>
+      <h2 className="tut__title display">Let&rsquo;s keep going</h2>
+      <p className="tut__line">{lines[question]} Nothing changes — we can practice just the same.</p>
+      <button type="button" className="tut__go" onClick={onNext}>
+        Okay <ArrowRight aria-hidden="true" />
       </button>
     </>
   );
@@ -454,7 +490,7 @@ function DoneStep({ name, onFinish }: { name: string; onFinish: () => void }) {
     <>
       <Bubble>{name ? `You're ready, ${name}!` : "You're ready!"}</Bubble>
       <h2 className="tut__title display">That was the whole tour</h2>
-      <p className="tut__line">Now you can pick your first card and practise for real.</p>
+      <p className="tut__line">Now you can pick your first card and practice for real.</p>
       <button type="button" className="tut__go tut__go--big" onClick={onFinish}>
         Finish the tour <ArrowRight aria-hidden="true" />
       </button>

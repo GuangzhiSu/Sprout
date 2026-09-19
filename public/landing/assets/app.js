@@ -12,7 +12,7 @@
     "Hello again!",
     "Take your time.",
     "I like dinosaurs.",
-    "We can practise together.",
+    "We can practice together.",
     "You are doing fine."
   ];
   var i = 0;

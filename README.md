@@ -10,7 +10,7 @@ The complete product and conversation design—including NPCs, state machine, di
 
 | Route | Who it is for | What it does |
 | --- | --- | --- |
-| `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practise, or the grown-ups' panel. They are the only place the child and the caregiver are told apart, so nothing in between asks again. |
+| `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practice, or the grown-ups' panel. They are the only place the child and the caregiver are told apart, so nothing in between asks again. |
 | `/tutorial` | the child | The first run: who they are, then what the app can do. Sends anyone who has already done it on to `/student`. |
 | `/feedback/` | the child | Static celebration (`public/feedback/`) after a practice, and after the tutorial with `?tutorial=1`. |
 | `/student` | the child | Scenario cards grouped by level. Tapping a ready card opens the practice screen. |

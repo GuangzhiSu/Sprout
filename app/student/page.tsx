@@ -51,7 +51,7 @@ export default function StudentPage() {
                   : "The next card is still being made."}
             </p>
             <h1 className="sv__hello display">
-              {profile.name ? `Ready to practise, ${profile.name}?` : "Ready to practise?"}
+              {profile.name ? `Ready to practice, ${profile.name}?` : "Ready to practice?"}
             </h1>
             <p className="sv__line">Pick the card that is lit up. You can stop whenever you want.</p>
           </div>

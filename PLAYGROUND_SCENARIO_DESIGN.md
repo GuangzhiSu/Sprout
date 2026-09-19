@@ -69,7 +69,7 @@ An exit request may move to `COMPLETE` from any stage. Unclear communication sta
 ## 5. Difficulty levels
 
 1. **Highly supported:** Mia directly invites the child, uses one short question at a time, and introduces no rejection or ambiguity.
-2. **Guided initiation:** Mia says hello and names the activity but does not invite directly. The child practises expressing interest or asking to join.
+2. **Guided initiation:** Mia says hello and names the activity but does not invite directly. The child practices expressing interest or asking to join.
 3. **Independent initiation:** both NPCs keep building until the child initiates. The exchange is longer and Jordan may ask for clarification.
 4. **Flexible social situation:** NPC initiative is low. One controlled unexpected event introduces a realistic limit, changed plan, “maybe later,” or alternative activity.
 

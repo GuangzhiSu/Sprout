@@ -482,8 +482,8 @@ export default function PlaygroundPractice() {
             <div><dt>Conversation turns</dt><dd>{result.conversationTurns}</dd></div>
             <div><dt>Spontaneous initiation</dt><dd>{result.spontaneousInitiation ? "Yes" : "Not this time"}</dd></div>
             <div><dt>Highest prompt used</dt><dd>Level {result.highestPromptLevel}</dd></div>
-            <div><dt>Clarification</dt><dd>{result.successfulClarifications > 0 ? `${result.successfulClarifications} successful repair` : "Not practised"}</dd></div>
-            <div><dt>Rejection handling</dt><dd>{result.rejectionResponses > 0 ? "Practised" : "Not practised"}</dd></div>
+            <div><dt>Clarification</dt><dd>{result.successfulClarifications > 0 ? `${result.successfulClarifications} successful repair` : "Not practiced"}</dd></div>
+            <div><dt>Rejection handling</dt><dd>{result.rejectionResponses > 0 ? "Practiced" : "Not practiced"}</dd></div>
             <div><dt>Suggested next time</dt><dd>Level {result.suggestedNextDifficulty}</dd></div>
           </dl>
           <div className="session-end__actions">
@@ -493,7 +493,7 @@ export default function PlaygroundPractice() {
               </button>
             )}
             <button className="secondary-button" onClick={() => resetSession(result.suggestedNextDifficulty)}>
-              <RotateCcw aria-hidden="true" /> Practise again
+              <RotateCcw aria-hidden="true" /> Practice again
             </button>
           </div>
           <a className="session-end__back" href="/student">Back to scenarios</a>
