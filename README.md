@@ -4,6 +4,44 @@ An English-language, scenario-based communication practice experience for autist
 
 The interface accepts speech or typed input, asks the Doubao Ark model for three short responses, reads selected language aloud, and optionally checks camera frames for clear observable signs that the activity should pause. The safety monitor is an assistive prompt, not a medical or emotional diagnosis.
 
+## Screens
+
+| Route | Who it is for | What it does |
+| --- | --- | --- |
+| `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practise, or the grown-ups' panel. |
+| `/choose` | either | One question — child or parent — between the landing page and the two dashboards. |
+| `/student` | the child | Scenario cards grouped by level. Tapping a ready card opens the practice screen. |
+| `/parent` | the caregiver | Status overview, SRS-2 score tracking with subscale detail, recent session recordings. |
+| `/` | the child | The practice screen itself: scene, coach, suggestions, safety monitor. |
+
+Both dashboards share `components/app-nav.tsx` and the stylesheet `app/dashboard.css`, which
+repeats the landing page's palette as CSS variables so a re-theme stays in one place. The
+student view keeps the landing page's pastel world; the parent view turns the same palette
+down, because it is read rather than played with.
+
+## Course catalogue
+
+`lib/courses.ts` lists the levels and their courses. A course either points at a scenario
+registered in `lib/scenarios.ts` or carries `scenarioId: null`, and the card then says
+"Coming soon" instead of linking somewhere that does not exist yet.
+
+## Tracking
+
+`lib/tracking.ts` holds the SRS-2 T-scores (total plus the five subscales), the sample
+recordings, and the CUSUM used for the status light. Higher scores mean more reported
+difficulty, so a line going down is progress.
+
+The status light is a tabular CUSUM, not a threshold on the latest score: the first four
+rounds set the baseline, `k = 0.5σ` of slack absorbs ordinary wobble, and the light changes
+only when the running sum crosses `h = 4σ`. σ has a floor so a flat baseline cannot make
+every small change a signal. Green is steady or improving, amber is drifting up, red is a
+sustained change. The headline takes the most severe state across the total and the five
+subscales, so one area drifting up is never hidden behind a good total.
+
+Every status colour ships with an icon and a word, the score chart has a table view behind
+"Show the numbers", and the sample scores are fixed values — nothing is randomised, so the
+screens render the same on the server and in the browser.
+
 ## Scenario architecture
 
 Scenario content and model context live in `lib/scenarios.ts`. Both the practice UI and server routes use the same scenario ID and definition, so new scenarios can be added without duplicating prompts or screen copy. Only `playground` is registered and exposed in this release.
