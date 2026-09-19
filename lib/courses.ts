@@ -153,7 +153,7 @@ export function getCourse(id: string): Course | null {
 
 /** Where a course card goes when it is tapped. */
 export function courseHref(course: Course) {
-  return course.scenarioId ? `/?scenario=${course.scenarioId}` : null;
+  return course.scenarioId ? `/practice?scenario=${course.scenarioId}` : null;
 }
 
 export type CourseState =

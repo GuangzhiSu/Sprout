@@ -9,7 +9,7 @@
    re-theme is one block.
    ========================================================================== */
 
-.dash, .scenario-shell, .session-end, .safety-dialog {
+.dash, .scenario-shell, .safety-dialog {
   /* product palette (mirrors public/landing/assets/styles.css) */
   --teal:       #7CBFD0;
   --teal-soft:  #E4F2F6;

@@ -2,7 +2,7 @@
 
 An English-language, scenario-based communication practice experience for autistic children and their caregivers. The first release contains one complete scenario: meeting peers and joining play at a playground.
 
-The interface accepts speech or typed input, asks the Doubao Ark model for three short responses, reads selected language aloud, and optionally checks camera frames for clear observable signs that the activity should pause. The safety monitor is an assistive prompt, not a medical or emotional diagnosis.
+The interface accepts speech or typed input, asks the Doubao Ark model for a short coaching note and peer reply, and optionally checks camera frames for clear observable signs that the activity should pause. The safety monitor is an assistive prompt, not a medical or emotional diagnosis.
 
 ## Screens
 
@@ -11,7 +11,9 @@ The interface accepts speech or typed input, asks the Doubao Ark model for three
 | `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practise, or the grown-ups' panel. They are the only place the child and the caregiver are told apart, so nothing in between asks again. |
 | `/student` | the child | Scenario cards grouped by level. Tapping a ready card opens the practice screen. |
 | `/parent` | the caregiver | Status overview, SRS-2 score tracking with subscale detail, recent conversations. |
-| `/` | the child | The practice screen itself: scene, coach, suggestions, safety monitor. |
+| `/practice?scenario=playground` | the child | The practice screen itself: scene, coach, input controls, and safety monitor. |
+| `/feedback/` | the child | A calm completion screen with replay and return-to-scenarios actions. |
+| `/` | everyone | Redirects to the landing page so the child/caregiver choice always comes first. |
 
 Both dashboards share `components/app-nav.tsx` and the stylesheet `app/dashboard.css`, which
 repeats the landing page's palette as CSS variables so a re-theme stays in one place. The

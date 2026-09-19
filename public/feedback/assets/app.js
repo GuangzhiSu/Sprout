@@ -23,7 +23,7 @@
   document.getElementById("turnsValue").textContent = turns + (turns === 1 ? " turn" : " turns");
 
   var practiceAgain = document.getElementById("practiceAgain");
-  practiceAgain.href = "/?scenario=" + encodeURIComponent(scenario.toLowerCase());
+  practiceAgain.href = "/practice?scenario=" + encodeURIComponent(scenario.toLowerCase());
 
   var canvas = document.getElementById("celebration");
   if (!canvas || reduceMotion) return;
