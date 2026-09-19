@@ -1,12 +1,10 @@
-type Suggestion = { text: string; intent: string };
+import { getScenario, type ScenarioDefinition } from "@/lib/scenarios";
 
-const fallbackSuggestions: Suggestion[] = [
-  { text: "Can I play with you?", intent: "Join in" },
-  { text: "What are you building?", intent: "Ask first" },
-  { text: "I like blocks too.", intent: "Share interest" },
-];
+function buildSystemPrompt(scenario: ScenarioDefinition) {
+  return `You are a scenario coach helping an autistic child practice social communication.
 
-const systemPrompt = `You are a scenario coach helping an autistic child practice social communication. Current scene: the child arrives at a playground and sees two peers building a castle with large blocks. The goal is to notice the activity, approach, initiate, wait for a response, and ask for a break when needed.
+Current scene: ${scenario.modelContext.scene}
+Practice goal: ${scenario.modelContext.goal}
 
 Principles:
 1. Respect the child's choice. Never require eye contact, physical contact, or continued interaction.
@@ -18,6 +16,7 @@ Principles:
 
 Return strict JSON only, with no Markdown:
 {"heard":"brief restatement","coachNote":"one gentle and specific coaching sentence","suggestions":[{"text":"short phrase","intent":"short label"},{"text":"short phrase","intent":"short label"},{"text":"short phrase","intent":"short label"}],"peerReply":"one natural reply from the peer"}`;
+}
 
 function extractJson(text: string) {
   const cleaned = text.replace(/```json|```/gi, "").trim();
@@ -27,7 +26,7 @@ function extractJson(text: string) {
   return JSON.parse(cleaned.slice(start, end + 1)) as Record<string, unknown>;
 }
 
-function normalize(payload: Record<string, unknown>, heard: string) {
+function normalize(payload: Record<string, unknown>, heard: string, scenario: ScenarioDefinition) {
   const rawSuggestions = Array.isArray(payload.suggestions) ? payload.suggestions : [];
   const suggestions = rawSuggestions
     .slice(0, 3)
@@ -42,18 +41,22 @@ function normalize(payload: Record<string, unknown>, heard: string) {
 
   return {
     heard: String(payload.heard ?? heard).trim().slice(0, 120),
-    coachNote: String(payload.coachNote ?? "You spoke up. Let’s make the idea shorter and easier to say.").trim().slice(0, 160),
-    suggestions: suggestions.length === 3 ? suggestions : fallbackSuggestions,
-    peerReply: String(payload.peerReply ?? "Sure! Would you like to build with us?").trim().slice(0, 120),
+    coachNote: String(payload.coachNote ?? scenario.fallback.coachNote).trim().slice(0, 160),
+    suggestions: suggestions.length === 3 ? suggestions : scenario.opening.suggestions,
+    peerReply: String(payload.peerReply ?? scenario.fallback.peerReply).trim().slice(0, 120),
   };
 }
 
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
+      scenarioId?: string;
       transcript?: string;
-      context?: { scenario?: string; peerSaid?: string };
+      context?: { peerSaid?: string };
     };
+    const scenario = getScenario(body.scenarioId ?? "");
+    if (!scenario) return Response.json({ error: "This scenario is not available." }, { status: 400 });
+
     const transcript = body.transcript?.trim().slice(0, 240) ?? "";
     if (!transcript) return Response.json({ error: "Say or type something first." }, { status: 400 });
 
@@ -61,9 +64,9 @@ export async function POST(request: Request) {
     if (!apiKey) {
       return Response.json({
         heard: transcript,
-        coachNote: "You spoke up. A shorter sentence can make your idea easier to understand.",
-        suggestions: fallbackSuggestions,
-        peerReply: "Sure! Which part of the castle would you like to build?",
+        coachNote: scenario.fallback.coachNote,
+        suggestions: scenario.opening.suggestions,
+        peerReply: scenario.fallback.peerReply,
         mode: "demo",
       });
     }
@@ -78,10 +81,10 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model,
         messages: [
-          { role: "system", content: systemPrompt },
+          { role: "system", content: buildSystemPrompt(scenario) },
           {
             role: "user",
-            content: `Scene: ${body.context?.scenario || "Joining peers at a playground"}\nThe peer just said: ${body.context?.peerSaid || "We’re building a castle"}\nThe child said: ${transcript}`,
+            content: `Scene: ${scenario.modelContext.scene}\nPractice goal: ${scenario.modelContext.goal}\nThe peer just said: ${body.context?.peerSaid || scenario.opening.peerReply}\nThe child said: ${transcript}`,
           },
         ],
         temperature: 0.35,
@@ -96,7 +99,7 @@ export async function POST(request: Request) {
     if (!response.ok) throw new Error(result.error?.message || "Doubao request failed");
     const content = result.choices?.[0]?.message?.content;
     if (!content) throw new Error("Doubao returned no content");
-    return Response.json(normalize(extractJson(content), transcript));
+    return Response.json(normalize(extractJson(content), transcript, scenario));
   } catch (error) {
     console.error("coach route failed", error instanceof Error ? error.message : error);
     return Response.json({ error: "Communication suggestions are temporarily unavailable. Please try again." }, { status: 502 });

@@ -26,6 +26,7 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { playgroundScenario } from "@/lib/scenarios";
 
 type Suggestion = { text: string; intent: string };
 
@@ -72,17 +73,14 @@ declare global {
   }
 }
 
-const openingSuggestions: Suggestion[] = [
-  { text: "Can I play with you?", intent: "Join in" },
-  { text: "What are you building?", intent: "Ask first" },
-  { text: "I like blocks too.", intent: "Share interest" },
-];
+const scenario = playgroundScenario;
+const openingSuggestions: Suggestion[] = scenario.opening.suggestions;
 
 const openingCoach: CoachResponse = {
   heard: "",
-  coachNote: "First, notice what they are doing. Then choose one thing you would like to say.",
+  coachNote: scenario.opening.coachNote,
   suggestions: openingSuggestions,
-  peerReply: "We’re building a castle!",
+  peerReply: scenario.opening.peerReply,
 };
 
 export default function Home() {
@@ -114,9 +112,9 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          scenarioId: scenario.id,
           transcript: clean,
           context: {
-            scenario: "Playground: joining peers who are building with blocks",
             peerSaid: coach.peerReply,
           },
         }),
@@ -128,9 +126,9 @@ export default function Home() {
     } catch {
       setCoach({
         heard: clean,
-        coachNote: "You spoke up. Try a short sentence, then give the other person time to answer.",
+        coachNote: scenario.fallback.coachNote,
         suggestions: openingSuggestions,
-        peerReply: "Sure! Which part would you like to build?",
+        peerReply: scenario.fallback.peerReply,
       });
       setNotice("The connection is unstable, so we kept a few practice ideas ready.");
     } finally {
@@ -185,7 +183,7 @@ export default function Home() {
       const response = await fetch("/api/safety", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageDataUrl }),
+        body: JSON.stringify({ scenarioId: scenario.id, imageDataUrl }),
       });
       const result = (await response.json()) as {
         alert?: boolean;
@@ -304,8 +302,8 @@ export default function Home() {
     setCoach((current) => ({
       ...current,
       peerReply: suggestion.text.includes("play")
-        ? "Sure! You can help us build the gate."
-        : "We’re building a castle. Want to see?",
+        ? scenario.peerReplies.joined
+        : scenario.peerReplies.continued,
     }));
   };
 
@@ -339,7 +337,7 @@ export default function Home() {
 
   return (
     <main className="scenario-shell">
-      <img className="scenario-bg" src="/playground-scene.png" alt="A sunny playground where two children build with blocks as another child walks toward them" />
+      <img className="scenario-bg" src={scenario.image.src} alt={scenario.image.alt} />
       <div className="scenario-wash" aria-hidden="true" />
 
       <header className="topbar">
@@ -351,8 +349,8 @@ export default function Home() {
           </div>
         </div>
         <div className="scenario-title">
-          <span>Scenario 01</span>
-          <strong>Meet new friends at the playground</strong>
+          <span>{scenario.sequenceLabel}</span>
+          <strong>{scenario.title}</strong>
         </div>
         <div className="status-row" aria-label="Device status">
           <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
@@ -366,23 +364,23 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="scene-content" aria-label="Playground practice scene">
+      <section className="scene-content" aria-label={scenario.sceneAriaLabel}>
         <aside className="mission-card glass-card">
           <div className="mission-card__topline">
-            <span className="step-number">1</span>
-            <span>Your mission</span>
+            <span className="step-number">{scenario.mission.step}</span>
+            <span>{scenario.mission.label}</span>
           </div>
-          <h2>Walk over and say hello</h2>
+          <h2>{scenario.mission.title}</h2>
           <ul>
-            <li><Check aria-hidden="true" /> Notice what they are playing</li>
-            <li><Check aria-hidden="true" /> Choose one thing to say</li>
-            <li><Check aria-hidden="true" /> Wait for their answer</li>
+            {scenario.mission.items.map((item) => (
+              <li key={item}><Check aria-hidden="true" /> {item}</li>
+            ))}
           </ul>
-          <p className="mission-note">Take your time. You can pause whenever you need.</p>
+          <p className="mission-note">{scenario.mission.note}</p>
         </aside>
 
         <div className="peer-bubble" role="status" aria-live="polite">
-          <span>Your new friend says</span>
+          <span>{scenario.opening.peerLabel}</span>
           <p>“{coach.peerReply}”</p>
         </div>
 

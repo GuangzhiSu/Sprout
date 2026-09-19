@@ -1,4 +1,36 @@
-# vinext-starter
+# Play Together
+
+An English-language, scenario-based communication practice experience for autistic children and their caregivers. The first release contains one complete scenario: meeting peers and joining play at a playground.
+
+The interface accepts speech or typed input, asks the Doubao Ark model for three short responses, reads selected language aloud, and optionally checks camera frames for clear observable signs that the activity should pause. The safety monitor is an assistive prompt, not a medical or emotional diagnosis.
+
+## Scenario architecture
+
+Scenario content and model context live in `lib/scenarios.ts`. Both the practice UI and server routes use the same scenario ID and definition, so new scenarios can be added without duplicating prompts or screen copy. Only `playground` is registered and exposed in this release.
+
+## Environment
+
+Copy `.env.example` to `.env.local` and set the server-only Ark credentials. Never expose `ARK_API_KEY` through a `VITE_` or `NEXT_PUBLIC_` variable.
+
+```env
+ARK_API_KEY=your_server_only_key
+ARK_MODEL=doubao-seed-2-0-lite-260215
+# Optional, when a separate vision-capable endpoint is configured:
+ARK_VISION_MODEL=your_vision_model
+```
+
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173/`. Production verification uses `npm run build`.
+
+---
+
+## Starter runtime notes
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 

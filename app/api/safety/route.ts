@@ -1,10 +1,16 @@
-const safetyPrompt = `You are a conservative visual safety notifier for an autistic child's communication practice. You may describe only behavior that is clearly observable in the current single frame. You must not diagnose emotion, illness, or intent.
+import { getScenario, type ScenarioDefinition } from "@/lib/scenarios";
+
+function buildSafetyPrompt(scenario: ScenarioDefinition) {
+  return `You are a conservative visual safety notifier for an autistic child's communication practice. You may describe only behavior that is clearly observable in the current single frame. You must not diagnose emotion, illness, or intent.
+
+Scenario context: ${scenario.modelContext.safety}
 
 Clear signals to consider include visible crying or a strong expression of pain, tightly covering both ears while clearly withdrawing, curling up or hiding, an ongoing self-injurious action, a fall, or an obvious hazard that needs immediate adult attention. A neutral expression, looking away, small movements, lack of eye contact, hand position, or simply leaving the frame must never trigger an alert on its own.
 
 Set alert to true only when evidence is clear and confidence is at least 0.75. When uncertain, alert must be false.
 Return strict JSON only, with no Markdown:
 {"alert":false,"confidence":0.0,"signals":["observable signal"],"reason":"brief, non-diagnostic note for the caregiver"}`;
+}
 
 function extractJson(text: string) {
   const cleaned = text.replace(/```json|```/gi, "").trim();
@@ -16,7 +22,10 @@ function extractJson(text: string) {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { imageDataUrl?: string };
+    const body = (await request.json()) as { scenarioId?: string; imageDataUrl?: string };
+    const scenario = getScenario(body.scenarioId ?? "");
+    if (!scenario) return Response.json({ error: "This scenario is not available." }, { status: 400 });
+
     const imageDataUrl = body.imageDataUrl ?? "";
     if (!imageDataUrl.startsWith("data:image/") || imageDataUrl.length > 2_800_000) {
       return Response.json({ error: "The image format is invalid." }, { status: 400 });
@@ -37,7 +46,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model,
         messages: [
-          { role: "system", content: safetyPrompt },
+          { role: "system", content: buildSafetyPrompt(scenario) },
           {
             role: "user",
             content: [
