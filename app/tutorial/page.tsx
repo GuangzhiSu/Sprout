@@ -12,6 +12,7 @@ import {
   type Profile,
 } from "@/lib/profile";
 import { playgroundScenario } from "@/lib/scenarios";
+import { speakAsChild } from "@/lib/speech";
 
 type BrowserSpeechRecognition = {
   lang: string;
@@ -360,12 +361,7 @@ function CardsStep({ name, onNext }: { name: string; onNext: () => void }) {
 
   const speak = (text: string) => {
     setHeard(text);
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.lang = "en-US";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
+    speakAsChild(text);
   };
 
   return (
