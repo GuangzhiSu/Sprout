@@ -19,6 +19,13 @@
   var scenario = cleanLabel(params.get("scenario"), "Playground", 32);
   var minutes = positiveNumber(params.get("minutes"), 6, 180);
   var turns = positiveNumber(params.get("turns"), 4, 100);
+  var difficulty = Math.max(1, positiveNumber(params.get("difficulty"), 2, 4));
+  var promptLevel = positiveNumber(params.get("prompt"), 1, 4);
+  var clarifications = positiveNumber(params.get("clarifications"), 0, 100);
+  var rejectionResponses = positiveNumber(params.get("rejection"), 0, 100);
+  var nextDifficulty = Math.max(1, positiveNumber(params.get("next"), difficulty, 4));
+  var spontaneous = params.get("spontaneous") === "1";
+  var completed = params.get("completed") !== "0";
 
   function setText(id, value) {
     var node = document.getElementById(id);
@@ -54,9 +61,19 @@
     setText("turnsLabel", "I give you things to say");
     setText("braveValue", "Your voice");
     setText("braveLabel", "Talk out loud, or type instead");
+    document.getElementById("practiceDetails")?.classList.add("is-hidden");
   } else {
+    setText("eyebrowText", completed ? "practice complete" : "practice paused");
+    setText("rewardTitle", completed ? "You did it!" : "A good stopping point");
+    setText("summaryTitle", "Your playground practice summary");
     setText("minutesValue", minutes + " min");
     setText("turnsValue", turns + (turns === 1 ? " turn" : " turns"));
+    setText("difficultyValue", "Level " + difficulty);
+    setText("spontaneousValue", spontaneous ? "Yes" : "Not this time");
+    setText("promptValue", "Level " + promptLevel);
+    setText("clarificationValue", clarifications ? clarifications + (clarifications === 1 ? " repair" : " repairs") : "Not used");
+    setText("changeValue", rejectionResponses ? "Practiced" : "Not in this run");
+    setText("nextValue", "Level " + nextDifficulty);
     document.getElementById("practiceAgain").href = "/practice?scenario=" + encodeURIComponent(scenario.toLowerCase());
   }
 

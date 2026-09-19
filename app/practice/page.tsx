@@ -8,10 +8,7 @@ import {
   LogOut,
   Mic,
   MicOff,
-  RotateCcw,
   Sprout,
-  Video,
-  VideoOff,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -36,7 +33,6 @@ import {
   type InteractionAnalysis,
   type PlayerProfile,
   type ScenarioRuntimeState,
-  type SessionSummary,
 } from "@/lib/playground-engine";
 import { profileForModel, profileSnapshot } from "@/lib/profile";
 import { markCourseComplete } from "@/lib/progress";
@@ -138,7 +134,6 @@ export default function PlaygroundPractice() {
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState("You may need a short break.");
   const [sessionEnded, setSessionEnded] = useState(false);
-  const [summary, setSummary] = useState<SessionSummary | null>(null);
   const [backgroundMuted, setBackgroundMuted] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -161,7 +156,6 @@ export default function PlaygroundPractice() {
     setCoach(opening.response);
     setConversation([{ heard: "", npcName: opening.response.npcName, peerReply: opening.response.peerReply }]);
     setTypedText("");
-    setSummary(null);
     setSessionEnded(false);
     setNotice(null);
   }, []);
@@ -313,7 +307,6 @@ export default function PlaygroundPractice() {
   const finishSession = useCallback((state: ScenarioRuntimeState) => {
     const nextSummary = buildSessionSummary(state);
     if (state.metrics.activityCompleted) markCourseComplete(scenario.id);
-    setSummary(nextSummary);
     setRuntimeState(state);
     setSessionEnded(true);
     setSafetyOpen(false);
@@ -329,18 +322,23 @@ export default function PlaygroundPractice() {
         startedAt: sessionStartedAtRef.current,
         state,
       }),
+      keepalive: true,
     }).catch(() => undefined);
-  }, [stopCamera]);
-
-  const openFeedback = () => {
     const minutes = Math.max(1, Math.round((Date.now() - Date.parse(sessionStartedAtRef.current)) / 60_000));
     const params = new URLSearchParams({
       scenario: scenario.id,
       minutes: String(minutes),
-      turns: String(summary?.conversationTurns ?? runtimeState.metrics.conversationalTurns),
+      turns: String(nextSummary.conversationTurns),
+      difficulty: String(nextSummary.difficulty),
+      spontaneous: nextSummary.spontaneousInitiation ? "1" : "0",
+      prompt: String(nextSummary.highestPromptLevel),
+      clarifications: String(nextSummary.successfulClarifications),
+      rejection: String(nextSummary.rejectionResponses),
+      next: String(nextSummary.suggestedNextDifficulty),
+      completed: nextSummary.activityCompleted ? "1" : "0",
     });
-    router.push(`/feedback/?${params.toString()}`);
-  };
+    router.replace(`/feedback/?${params.toString()}`);
+  }, [router, stopCamera]);
 
   const requestCoach = useCallback(async (transcript: string) => {
     const clean = transcript.trim();
@@ -449,40 +447,6 @@ export default function PlaygroundPractice() {
     return () => lifecycle.abort();
   }, [profile.recommendedDifficulty, resetSession]);
 
-  if (sessionEnded) {
-    const result = summary ?? buildSessionSummary(runtimeState);
-    return (
-      <main className="session-end">
-        <section className="session-end__card" aria-labelledby="summary-title">
-          <div className="session-end__icon"><HeartHandshake aria-hidden="true" /></div>
-          <p className="eyebrow">Practice summary</p>
-          <h1 id="summary-title">You chose how this interaction ended</h1>
-          <p>There is no single right way to socialize. Here is what happened in this practice.</p>
-          <dl className="session-summary">
-            <div><dt>Difficulty</dt><dd>Level {result.difficulty}</dd></div>
-            <div><dt>Conversation turns</dt><dd>{result.conversationTurns}</dd></div>
-            <div><dt>Spontaneous initiation</dt><dd>{result.spontaneousInitiation ? "Yes" : "Not this time"}</dd></div>
-            <div><dt>Highest prompt used</dt><dd>Level {result.highestPromptLevel}</dd></div>
-            <div><dt>Clarification</dt><dd>{result.successfulClarifications > 0 ? `${result.successfulClarifications} successful repair` : "Not practiced"}</dd></div>
-            <div><dt>Rejection handling</dt><dd>{result.rejectionResponses > 0 ? "Practiced" : "Not practiced"}</dd></div>
-            <div><dt>Suggested next time</dt><dd>Level {result.suggestedNextDifficulty}</dd></div>
-          </dl>
-          <div className="session-end__actions">
-            {result.activityCompleted && (
-              <button className="primary-button" onClick={openFeedback}>
-                <Check aria-hidden="true" /> Finish scenario
-              </button>
-            )}
-            <button className="secondary-button" onClick={() => resetSession(result.suggestedNextDifficulty)}>
-              <RotateCcw aria-hidden="true" /> Practice again
-            </button>
-          </div>
-          <a className="session-end__back" href="/student">Back to scenarios</a>
-        </section>
-      </main>
-    );
-  }
-
   const currentStage = getStageDefinition(runtimeState.stage);
   const visibleStages = stageDefinitions.filter((stage) => stage.id !== "complete");
   const currentStageIndex = visibleStages.findIndex((stage) => stage.id === runtimeState.stage);
@@ -515,10 +479,6 @@ export default function PlaygroundPractice() {
           <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
             {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
             <span className="status-pill__label">{listening ? "Listening" : "Mic ready"}</span>
-          </span>
-          <span className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}>
-            {cameraOn && !monitorPaused ? <Video aria-hidden="true" /> : <VideoOff aria-hidden="true" />}
-            <span className="status-pill__label">{cameraOn && !monitorPaused ? "Monitor on" : "Monitor off"}</span>
           </span>
         </div>
       </header>
