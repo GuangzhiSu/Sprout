@@ -14,7 +14,6 @@ import {
 } from "@/lib/courses";
 import { profileSnapshot, serverProfileSnapshot, subscribeProfile } from "@/lib/profile";
 import { progressSnapshot, serverProgressSnapshot, subscribeProgress } from "@/lib/progress";
-import { playgroundScenario } from "@/lib/scenarios";
 
 /**
  * Scenario cards, in the landing page's world: one level open at a time, one
@@ -118,7 +117,6 @@ function CourseCard({ course, state }: { course: Course; state: CourseState }) {
   const href = state === "current" || state === "done" ? courseHref(course) : null;
   const flag = flags[state];
   const Icon = flag.icon;
-  const usesScenePhoto = course.scenarioId === playgroundScenario.id;
 
   const inner = (
     <>
@@ -127,14 +125,8 @@ function CourseCard({ course, state }: { course: Course; state: CourseState }) {
         {flag.label}
       </span>
 
-      <span className={`course-card__window course-card__window--${course.tile}`}>
-        {usesScenePhoto && state !== "locked" ? (
-          <img src={playgroundScenario.image.src} alt="" />
-        ) : (
-          <span className="course-card__emoji" aria-hidden="true">
-            {state === "locked" ? <Lock size={34} /> : course.emoji}
-          </span>
-        )}
+      <span className="course-card__window">
+        <img src={course.imageSrc} alt="" />
       </span>
 
       <span className="course-card__body">

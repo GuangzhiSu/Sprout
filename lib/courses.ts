@@ -18,9 +18,8 @@ export type Course = {
   scenarioId: string | null;
   /** Roughly how long one run takes. */
   minutes: number;
-  /** Decorative tile: an emoji plus the palette key used behind it. */
-  emoji: string;
-  tile: "mint" | "sky" | "sun" | "lav" | "blush" | "sand";
+  /** Scene preview shown on the course card. */
+  imageSrc: string;
 };
 
 export type Level = {
@@ -47,8 +46,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "Two children are building a castle. Go and say hello.",
         scenarioId: "playground",
         minutes: 5,
-        emoji: "🏰",
-        tile: "mint",
+        imageSrc: "/playground-scene.png",
       },
       {
         id: "new-classmate",
@@ -56,8 +54,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "Someone new sits down next to you.",
         scenarioId: null,
         minutes: 5,
-        emoji: "🎒",
-        tile: "sky",
+        imageSrc: "/scenes/new-classmate.png",
       },
       {
         id: "asking-to-join",
@@ -65,8 +62,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "A ball game has already started. Ask if you can play.",
         scenarioId: null,
         minutes: 6,
-        emoji: "⚽",
-        tile: "sun",
+        imageSrc: "/scenes/asking-to-join.png",
       },
     ],
   },
@@ -82,8 +78,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "You both want the same truck. Find a way to take turns.",
         scenarioId: null,
         minutes: 6,
-        emoji: "🚚",
-        tile: "lav",
+        imageSrc: "/scenes/sharing-a-toy.png",
       },
       {
         id: "birthday-party",
@@ -91,8 +86,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "The room is loud. Find one person to talk to.",
         scenarioId: null,
         minutes: 7,
-        emoji: "🎂",
-        tile: "blush",
+        imageSrc: "/scenes/birthday-party.png",
       },
       {
         id: "asking-for-a-break",
@@ -100,8 +94,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "It is getting too noisy. Say so, kindly.",
         scenarioId: null,
         minutes: 4,
-        emoji: "🌿",
-        tile: "sand",
+        imageSrc: "/scenes/asking-for-a-break.png",
       },
     ],
   },
@@ -117,8 +110,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "Your friend has gone quiet. Ask what happened.",
         scenarioId: null,
         minutes: 6,
-        emoji: "🫂",
-        tile: "sky",
+        imageSrc: "/scenes/someone-is-upset.png",
       },
       {
         id: "saying-sorry",
@@ -126,8 +118,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "You knocked over their tower by accident.",
         scenarioId: null,
         minutes: 5,
-        emoji: "🧱",
-        tile: "blush",
+        imageSrc: "/scenes/saying-sorry.png",
       },
       {
         id: "making-a-plan",
@@ -135,8 +126,7 @@ export const levels: LevelWithCourses[] = [
         blurb: "You both want to play, but different games.",
         scenarioId: null,
         minutes: 7,
-        emoji: "🗺️",
-        tile: "mint",
+        imageSrc: "/scenes/making-a-plan.png",
       },
     ],
   },
