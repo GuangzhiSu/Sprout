@@ -75,9 +75,9 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  gap: 8px;
+  gap: 5px;
   min-height: 36px;
-  padding: 6px 14px;
+  padding: 6px 9px;
   box-sizing: border-box;
   border: 1px solid #b63f48;
   border-radius: 999px;
@@ -86,7 +86,7 @@
   font-weight: 800;
 }
 .exit-button:hover { background: #9b313a; border-color: #9b313a; color: white; }
-.exit-button svg { width: 18px; height: 18px; }
+.exit-button svg { width: 16px; height: 16px; }
 .scenario-shell :is(button, input):focus-visible, .session-end :is(button, a):focus-visible {
   outline: 3px dashed var(--teal-deep);
   outline-offset: 4px;
@@ -100,9 +100,9 @@
   align-items: center;
   gap: 28px;
   width: 100%;
-  min-height: 62px;
+  min-height: 40px;
   margin: 0;
-  padding: 6px max(24px, calc((100% - 1180px) / 2));
+  padding: 3px max(20px, calc((100% - 1240px) / 2));
   box-sizing: border-box;
   border: 0;
   border-radius: 0;
@@ -117,11 +117,11 @@
   padding: 0;
   list-style: none;
 }
-.stage-strip li { position: relative; display: grid; justify-items: center; gap: 2px; color: #6b7f82; }
+.stage-strip li { position: relative; display: flex; align-items: center; justify-content: center; gap: 4px; color: #6b7f82; }
 .stage-strip li::before {
   content: "";
   position: absolute;
-  top: 14px;
+  top: 50%;
   right: 50%;
   left: -50%;
   height: 3px;
@@ -133,8 +133,9 @@
   position: relative;
   z-index: 1;
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
   place-items: center;
   border: 1px solid #a9c4bb;
   border-radius: 50%;
@@ -145,7 +146,11 @@
   transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
 .stage-strip li > span svg { width: 15px; }
-.stage-strip li small { font-size: .73rem; font-weight: 800; line-height: 1.2; text-align: center; }
+.stage-strip li small {
+  position: relative; z-index: 1; padding-inline: 2px;
+  background: rgba(238, 248, 244, .98);
+  font-size: .7rem; font-weight: 800; line-height: 1.1; text-align: center;
+}
 .stage-strip .stage-done::before, .stage-strip .stage-current::before { background: var(--teal); }
 .stage-strip .stage-done > span { border-color: var(--teal); background: var(--teal); color: white; }
 .stage-strip .stage-current > span { border-color: #d0a73f; background: var(--sun); color: var(--ink); box-shadow: 0 0 0 4px rgba(255, 218, 129, .28), 0 3px 9px rgba(33, 74, 65, .1); }
@@ -274,6 +279,7 @@
   .stage-strip { grid-template-columns: 1fr; gap: 6px; min-height: 0; padding: 6px 20px 8px; }
   .stage-strip > p { text-align: center; }
   .stage-strip li small { display: none; }
+  .stage-strip li { display: grid; }
   .practice-workspace { grid-template-columns: minmax(330px, 390px) minmax(0, 1fr); }
   .coach-dock { padding-inline: 20px; }
 }
@@ -283,10 +289,10 @@
   .topbar { min-height: 46px; gap: 8px; padding: 5px 10px; }
   .status-row { gap: 6px; }
   .status-pill { width: 36px; height: 36px; min-height: 36px; justify-content: center; padding: 0; font-size: 0; }
-  .exit-button { min-height: 36px; padding: 6px 12px; font-size: .82rem; }
+  .exit-button { min-height: 36px; padding: 6px 9px; font-size: .8rem; }
   .stage-strip { padding: 5px 10px 7px; }
-  .stage-strip li > span { width: 28px; height: 28px; }
-  .stage-strip li::before { top: 13px; }
+  .stage-strip li > span { width: 26px; height: 26px; }
+  .stage-strip li::before { top: 50%; }
   .stage-strip > p { font-size: .84rem; }
   .practice-workspace { grid-template-columns: 1fr; grid-template-rows: minmax(240px, 1fr) auto; }
   .scene-content { grid-column: 1; grid-row: 1; min-height: 0; }
