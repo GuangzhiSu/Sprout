@@ -19,3 +19,23 @@ export function SproutMascot({ size = 132 }: { size?: number }) {
     </svg>
   );
 }
+
+/**
+ * Sprout at icon size: the same two leaves and round face, simplified so it
+ * still reads at 20px. Used wherever the product signs its name — the tutorial
+ * header and both dashboard headers — so the brand mark is one thing.
+ */
+export function MascotMark({ size = 24 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 32 32" width={size} height={size} aria-hidden="true" focusable="false">
+      <path d="M15.3 9.6C14.4 5.3 10.6 3 6.9 3.4c-.4 3.9 2.6 7.2 7.2 7.5z" fill="#8ECB9F" />
+      <path d="M16.7 9.6c1.2-4.1 4.9-6 8.4-5.4.3 3.8-2.9 6.9-7.2 7.2z" fill="#A9D9B6" />
+      <path d="M16 13.6V8" stroke="#6FB585" strokeWidth="1.6" strokeLinecap="round" fill="none" />
+      <circle cx="16" cy="20.4" r="9.3" fill="#C6E7DD" />
+      <circle cx="16" cy="20.4" r="9.3" fill="none" stroke="#fff" strokeWidth="1.7" />
+      <circle cx="12.7" cy="19.2" r="1.4" fill="#21313A" />
+      <circle cx="19.3" cy="19.2" r="1.4" fill="#21313A" />
+      <path d="M13.2 22.9q2.8 2.2 5.6 0" fill="none" stroke="#21313A" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}

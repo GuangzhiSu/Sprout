@@ -1,4 +1,5 @@
-import { Bell, House, Sprout } from "lucide-react";
+import { Bell, House } from "lucide-react";
+import { MascotMark } from "@/components/sprout-mascot";
 
 type NavLink = { label: string; href: string };
 
@@ -28,7 +29,7 @@ export function AppNav({ variant, current }: Props) {
   return (
     <header className="app-nav">
       <a className="app-nav__brand" href="/landing/">
-        <span className="app-nav__mark" aria-hidden="true"><Sprout /></span>
+        <span className="app-nav__mark" aria-hidden="true"><MascotMark size={28} /></span>
         <span>
           <strong className="app-nav__name">Sprout</strong>
           <span className="app-nav__who">{variant === "student" ? "Practice" : "Tracking panel"}</span>

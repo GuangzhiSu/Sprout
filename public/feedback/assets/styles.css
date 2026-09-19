@@ -150,56 +150,13 @@ h1, h2, p { margin: 0; }
 
 .mascot {
   position: relative;
-  width: 94px;
-  height: 102px;
-  margin: 0 auto 16px;
+  width: 118px;
+  height: 118px;
+  margin: 0 auto 14px;
   animation: happy-float 3.8s ease-in-out infinite;
 }
-.mascot__face {
-  position: absolute;
-  left: 4px;
-  bottom: 0;
-  width: 86px;
-  height: 86px;
-  border: 5px solid #fff;
-  border-radius: 50%;
-  background: var(--mint);
-  box-shadow: 0 10px 22px rgba(33, 49, 58, 0.12);
-}
-.mascot__leaf {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  width: 37px;
-  height: 26px;
-  background: var(--green);
-}
-.mascot__leaf--left { left: 18px; border-radius: 90% 12% 90% 12%; transform: rotate(24deg); }
-.mascot__leaf--right { right: 17px; border-radius: 12% 90% 12% 90%; transform: rotate(-24deg); background: #a9d9b6; }
-.mascot__eye {
-  position: absolute;
-  top: 32px;
-  width: 8px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--ink);
-  animation: blink 7s infinite;
-}
-.mascot__eye--left { left: 23px; }
-.mascot__eye--right { right: 23px; }
-.mascot__cheek { position: absolute; top: 47px; width: 15px; height: 9px; border-radius: 50%; background: rgba(248, 174, 178, 0.72); }
-.mascot__cheek--left { left: 10px; }
-.mascot__cheek--right { right: 10px; }
-.mascot__smile {
-  position: absolute;
-  left: 50%;
-  top: 47px;
-  width: 24px;
-  height: 14px;
-  border-bottom: 4px solid var(--ink);
-  border-radius: 0 0 20px 20px;
-  transform: translateX(-50%);
-}
+.mascot svg { display: block; width: 100%; height: 100%; }
+.mascot__eyes { animation: blink 7s infinite; transform-origin: center 128px; }
 
 .eyebrow {
   display: inline-flex;

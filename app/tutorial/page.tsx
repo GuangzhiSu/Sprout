@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Check, Mic, MicOff, Sparkles, Volume2 } from "lucide-react";
-import { SproutMascot } from "@/components/sprout-mascot";
+import { ArrowRight, Check, Mic, MicOff, Volume2 } from "lucide-react";
+import { MascotMark, SproutMascot } from "@/components/sprout-mascot";
 import {
   profileSnapshot,
   saveProfile,
@@ -126,7 +126,7 @@ export default function TutorialPage() {
 
       <header className="tut__top">
         <span className="tut__brand">
-          <Sparkles aria-hidden="true" /> Sprout
+          <MascotMark size={26} /> Sprout
         </span>
         {/* One dot per step: filled for the ones behind, ringed for the one
             being shown. The row is never entirely filled while the tour is

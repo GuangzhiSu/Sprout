@@ -38,7 +38,7 @@
   font-family: "Baloo 2", "Nunito", sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--teal-deep);
   box-shadow: 0 4px 14px rgba(33, 49, 58, .12);
 }
-.tut__brand svg { width: 20px; height: 20px; }
+
 
 .tut__dots {
   display: flex; gap: 7px; margin: 0;
