@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sprout · Multi-agent social practice</title>
+<meta name="description" content="Sprout rebuilds the supermarket, the classroom and the first conversation as controllable multi-agent scenes, so children on the spectrum and their families can rehearse where mistakes cost nothing." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%237CBFD0'/%3E%3Cpath d='M16 24v-8m0 0c0-4 3-6 7-6 0 4-3 6-7 6zm0 2c0-3-2.5-5-6-5 0 3 2.5 5 6 5z' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28">
+          <circle cx="16" cy="16" r="15" fill="url(#g1)"/>
+          <path d="M16 24.5V15m0 0c0-4.2 3.2-6.4 7.4-6.4 0 4.2-3.2 6.4-7.4 6.4zm0 2.6c0-3.2-2.6-5.3-6.3-5.3 0 3.2 2.6 5.3 6.3 5.3z" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7CBFD0"/><stop offset="1" stop-color="#8ECB9F"/></linearGradient></defs>
+        </svg>
+      </span>
+      <span class="brand__name">Sprout</span>
+      <span class="brand__tag">Research Preview</span>
+    </a>
+
+    <nav class="nav__links" aria-label="Main">
+      <a href="#scenarios">Scenarios</a>
+      <a href="#features">Capabilities</a>
+      <a href="#tracking">Tracking</a>
+      <a href="#parents">For Parents</a>
+    </nav>
+
+    <div class="nav__actions">
+      <a class="icon-btn" href="https://github.com/GuangzhiSu/buildathon" target="_blank" rel="noopener" aria-label="Project repository">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+          <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03a9.5 9.5 0 0 1 5 0c1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.85-2.34 4.7-4.57 4.95.36.31.68.92.68 1.85l-.01 2.75c0 .26.18.58.69.48A10 10 0 0 0 12 2z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+      <a class="btn btn--dark btn--sm" href="#start">Log in</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="hero__blobs" aria-hidden="true">
+    <span class="blob blob--teal"></span>
+    <span class="blob blob--mint"></span>
+    <span class="blob blob--blush"></span>
+    <span class="blob blob--lav"></span>
+  </div>
+
+  <div class="wrap hero__inner">
+    <p class="pill reveal">
+      <span class="pill__dot" aria-hidden="true"></span>
+      <span>Multi-agent social simulation · Buildathon demo</span>
+    </p>
+
+    <h1 class="hero__title reveal">Rehearse the moment <em>before it costs anything</em></h1>
+
+    <p class="hero__sub reveal">One hard moment in the real world can set a child on the spectrum back for months. Sprout rebuilds the supermarket, the classroom and the first conversation as controllable multi-agent scenes — a place to get it wrong safely, with a parent alongside.</p>
+
+    <div class="hero__cta reveal" id="start">
+      <a class="btn btn--primary btn--lg" href="#scenarios">
+        <span>Start a rehearsal</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn btn--ghost btn--lg" href="#tracking">See the tracking panel</a>
+    </div>
+
+    <p class="hero__note reveal">Works without a camera · Multimodal sensing is off by default · Data can stay on device</p>
+
+    <!-- Scenario demo card -->
+    <div class="demo reveal">
+      <div class="demo__tabs" role="tablist" aria-label="Scenario">
+        <button class="tab is-active" role="tab" data-scene="market" aria-selected="true">
+          <span class="tab__emoji" aria-hidden="true">🛒</span><span>Checkout</span>
+        </button>
+        <button class="tab" role="tab" data-scene="class" aria-selected="false">
+          <span class="tab__emoji" aria-hidden="true">🎒</span><span>Group work</span>
+        </button>
+        <button class="tab" role="tab" data-scene="talk" aria-selected="false">
+          <span class="tab__emoji" aria-hidden="true">💬</span><span>First chat</span>
+        </button>
+        <span class="demo__level">Level · Core L2</span>
+      </div>
+
+      <div class="demo__body">
+        <div class="scene is-active" data-scene="market">
+          <p class="scene__narration">Narration: Two people left in the queue. The cashier glances up at you.</p>
+          <div class="msg">
+            <span class="avatar avatar--teal" aria-hidden="true">C</span>
+            <div class="msg__body">
+              <span class="msg__who">Cashier agent · patience: medium</span>
+              <p>“That'll be $23.50. Do you need a bag?”</p>
+            </div>
+          </div>
+          <div class="choices">
+            <button class="choice">“Yes, one please.”</button>
+            <button class="choice">Nod and hand over the money</button>
+            <button class="choice choice--soft">Too loud — I need to step back</button>
+          </div>
+        </div>
+
+        <div class="scene" data-scene="class">
+          <p class="scene__narration">Narration: The teacher says “groups of four.” Your deskmate turns their chair towards you.</p>
+          <div class="msg">
+            <span class="avatar avatar--green" aria-hidden="true">P</span>
+            <div class="msg__body">
+              <span class="msg__who">Classmate agent · warmth: high</span>
+              <p>“Want to be the note-taker? I'll do the talking.”</p>
+            </div>
+          </div>
+          <div class="choices">
+            <button class="choice">“Okay, I'll write.”</button>
+            <button class="choice">“I'd like to try speaking this part.”</button>
+            <button class="choice choice--soft">Ask for 20 quiet seconds</button>
+          </div>
+        </div>
+
+        <div class="scene" data-scene="talk">
+          <p class="scene__narration">Narration: Break time. Someone down the hall is looking at the dinosaur in your hand.</p>
+          <div class="msg">
+            <span class="avatar avatar--lav" aria-hidden="true">N</span>
+            <div class="msg__body">
+              <span class="msg__who">New friend agent · topic: dinosaurs</span>
+              <p>“Is that a triceratops? I have one too.”</p>
+            </div>
+          </div>
+          <div class="choices">
+            <button class="choice">“Yes! It has three horns.”</button>
+            <button class="choice">Ask back: “What colour is yours?”</button>
+            <button class="choice choice--soft">Wave first, speak slowly</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo__foot">
+        <span class="chip">Parent can pause anytime</span>
+        <span class="chip">Clinician agent on standby</span>
+        <span class="chip chip--muted">Design demo — not medical advice</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PROBLEM ========== -->
+<section class="section section--soft" id="why">
+  <div class="wrap">
+    <p class="eyebrow reveal">The problem</p>
+    <h2 class="section__title reveal">Chances to practise are themselves scarce</h2>
+    <div class="grid grid--3">
+      <article class="card card--plain reveal">
+        <span class="card__ix card__ix--coral">01</span>
+        <h3>The real world has no undo</h3>
+        <p>A misread conversation or a meltdown at the till is paid for by the whole family — and there is no second take.</p>
+      </article>
+      <article class="card card--plain reveal">
+        <span class="card__ix card__ix--teal">02</span>
+        <h3>Support doesn't scale</h3>
+        <p>Structured social training depends on therapists and role-play partners. Between sessions, the practice simply stops.</p>
+      </article>
+      <article class="card card--plain reveal">
+        <span class="card__ix card__ix--green">03</span>
+        <h3>Every profile is different</h3>
+        <p>Sound, eye contact, or simply not knowing how to open — one curriculum cannot hold all of these differences.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section class="section" id="features">
+  <div class="wrap">
+    <p class="eyebrow reveal">Capabilities</p>
+    <h2 class="section__title reveal">A rehearsal system you can control, observe and tune</h2>
+    <p class="section__lead reveal">Every capability is a switch. Start with text only, and add voice or facial cues when — and if — it helps.</p>
+
+    <div class="grid grid--3 grid--features">
+      <article class="card reveal" style="--accent:var(--teal); --accent-soft:var(--teal-soft)">
+        <span class="card__icon" aria-hidden="true">👥</span>
+        <h3>Agents with a personality</h3>
+        <p>Cashier, classmate, teacher — each with their own goal, patience and mood curve. They follow up, get distracted, and can wait for the child's pace.</p>
+      </article>
+      <article class="card reveal" style="--accent:var(--green); --accent-soft:var(--green-soft)">
+        <span class="card__icon" aria-hidden="true">🎚️</span>
+        <h3>Optional multimodal sensing</h3>
+        <p>Pace and pauses in speech, subtle changes in expression — enabled only with a parent's consent, and used to adjust difficulty, never to score a child.</p>
+      </article>
+      <article class="card reveal" style="--accent:var(--lav); --accent-soft:var(--lav-soft)">
+        <span class="card__icon" aria-hidden="true">🩺</span>
+        <h3>A clinician agent that steps in</h3>
+        <p>Appears at emotional peaks and dips: a way out for the child, an explanation for the parent, and a suggestion to end the round when that's the right call.</p>
+      </article>
+      <article class="card reveal" style="--accent:var(--coral); --accent-soft:var(--coral-soft)">
+        <span class="card__icon" aria-hidden="true">📈</span>
+        <h3>Multimodal tracking</h3>
+        <p>Engagement, self-initiated turns, mood swings and exit moments become a timeline you can bring to a clinic — not a single score.</p>
+      </article>
+      <article class="card reveal" style="--accent:var(--blush); --accent-soft:var(--blush-soft)">
+        <span class="card__icon" aria-hidden="true">🧩</span>
+        <h3>Personalised plans</h3>
+        <p>Case notes and a parent's description shape the scenario sequence, with goals split into core and bonus.</p>
+      </article>
+      <article class="card reveal" style="--accent:var(--mint); --accent-soft:var(--mint-soft)">
+        <span class="card__icon" aria-hidden="true">🛟</span>
+        <h3>An exit that's always there</h3>
+        <p>Every scene offers “let me step back”. Leaving isn't failure — it's logged as an act of self-regulation.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENARIOS ========== -->
+<section class="section section--soft" id="scenarios">
+  <div class="wrap">
+    <p class="eyebrow reveal">Scenario library</p>
+    <h2 class="section__title reveal">From a checkout to an introduction</h2>
+    <p class="section__lead reveal">Scenarios are layered by how unavoidable they are: core scenes cover daily life, bonus scenes stretch the comfort zone.</p>
+
+    <div class="grid grid--3">
+      <article class="scen reveal">
+        <div class="scen__art scen__art--teal" aria-hidden="true"><span>🛒</span></div>
+        <div class="scen__body">
+          <div class="scen__tags"><span class="tag tag--core">Core</span><span class="tag">L1 – L3</span></div>
+          <h3>Supermarket</h3>
+          <p>Find the item, queue, answer the cashier, handle noise and waiting.</p>
+          <ul class="scen__goals">
+            <li>Core: finish one checkout exchange</li>
+            <li>Bonus: ask where something is</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="scen reveal">
+        <div class="scen__art scen__art--green" aria-hidden="true"><span>🎒</span></div>
+        <div class="scen__body">
+          <div class="scen__tags"><span class="tag tag--core">Core</span><span class="tag">L2 – L4</span></div>
+          <h3>Classroom</h3>
+          <p>Group up, take turns, and find the way back after an interruption.</p>
+          <ul class="scen__goals">
+            <li>Core: accept a role in the group</li>
+            <li>Bonus: offer your own idea</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="scen reveal">
+        <div class="scen__art scen__art--lav" aria-hidden="true"><span>💬</span></div>
+        <div class="scen__body">
+          <div class="scen__tags"><span class="tag tag--bonus">Bonus</span><span class="tag">L3 – L5</span></div>
+          <h3>A conversation</h3>
+          <p>Start from a shared interest; practise opening, asking back, and ending gracefully.</p>
+          <ul class="scen__goals">
+            <li>Core: answer one question</li>
+            <li>Bonus: hand the topic back</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+
+    <p class="section__foot reveal">In the works: waiting rooms, birthday parties, a first subway ride.</p>
+  </div>
+</section>
+
+<!-- ========== TRACKING ========== -->
+<section class="section" id="tracking">
+  <div class="wrap grid--split">
+    <div class="reveal">
+      <p class="eyebrow">Tracking</p>
+      <h2 class="section__title">We record states, not grades</h2>
+      <p class="section__lead">Each round leaves an explainable trace: when the child offered one more sentence, when they needed to leave. Parents and clinicians read the same timeline.</p>
+      <ul class="list">
+        <li>Engagement and curiosity: who moves the conversation forward</li>
+        <li>Peaks and dips: what triggered them, how long recovery took</li>
+        <li>Case import: turn existing records into scenario parameters</li>
+        <li>Export: a one-page summary for the next appointment</li>
+      </ul>
+    </div>
+
+    <figure class="panel reveal">
+      <figcaption class="panel__head">
+        <span class="panel__title">Engagement · last 6 rehearsals</span>
+        <span class="panel__meta">Sample data</span>
+      </figcaption>
+
+      <div class="kpis">
+        <div class="kpi">
+          <span class="kpi__label">Self-initiated</span>
+          <span class="kpi__value">12<small> turns</small></span>
+          <span class="kpi__delta kpi__delta--up">+5</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__label">Time in scene</span>
+          <span class="kpi__value">8<small> min</small></span>
+          <span class="kpi__delta kpi__delta--up">+2</span>
+        </div>
+        <div class="kpi">
+          <span class="kpi__label">Self-exits</span>
+          <span class="kpi__value">1<small> time</small></span>
+          <span class="kpi__delta">flat</span>
+        </div>
+      </div>
+
+      <svg class="chart" viewBox="0 0 640 200" role="img" aria-label="Engagement rises from 30% to 86% across six rehearsals, dipping at the third and peaking at the last.">
+        <defs>
+          <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#7CBFD0" stop-opacity=".28"/>
+            <stop offset="1" stop-color="#7CBFD0" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g class="chart__grid">
+          <line x1="28" y1="40" x2="620" y2="40"/>
+          <line x1="28" y1="90" x2="620" y2="90"/>
+          <line x1="28" y1="140" x2="620" y2="140"/>
+        </g>
+        <path class="chart__area" d="M50,104 L158,82 L266,90 L374,56 L482,70 L590,37 L590,140 L50,140 Z" fill="url(#area)"/>
+        <path class="chart__line" d="M50,104 L158,82 L266,90 L374,56 L482,70 L590,37"/>
+        <circle class="chart__dot chart__dot--low" cx="266" cy="90" r="5.5"/>
+        <circle class="chart__dot chart__dot--high" cx="590" cy="37" r="5.5"/>
+        <text class="chart__note chart__note--low" x="266" y="114" text-anchor="middle">Dip · queue too long</text>
+        <text class="chart__note chart__note--high" x="590" y="24" text-anchor="end">Peak · asked a question</text>
+        <g class="chart__x">
+          <text x="50" y="164" text-anchor="middle">1</text>
+          <text x="158" y="164" text-anchor="middle">2</text>
+          <text x="266" y="164" text-anchor="middle">3</text>
+          <text x="374" y="164" text-anchor="middle">4</text>
+          <text x="482" y="164" text-anchor="middle">5</text>
+          <text x="590" y="164" text-anchor="middle">6</text>
+        </g>
+      </svg>
+
+      <div class="panel__foot">
+        <span class="dot dot--green" aria-hidden="true"></span>
+        <span>The clinician agent lowered the noise level after rehearsal 3</span>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<!-- ========== PARENTS ========== -->
+<section class="section section--soft" id="parents">
+  <div class="wrap">
+    <p class="eyebrow reveal">Built with parents</p>
+    <h2 class="section__title reveal">Parents aren't spectators — they're co-designers</h2>
+    <div class="steps">
+      <article class="step reveal">
+        <span class="step__n">1</span>
+        <h3>Describe the child</h3>
+        <p>Write down triggers and interests in everyday words, or import an existing assessment.</p>
+      </article>
+      <article class="step reveal">
+        <span class="step__n">2</span>
+        <h3>Pick and rewrite a scene</h3>
+        <p>Swap a line, turn the noise down, replace a stranger with a familiar neighbour.</p>
+      </article>
+      <article class="step reveal">
+        <span class="step__n">3</span>
+        <h3>Sit alongside</h3>
+        <p>Pause, take over a role, or simply watch quietly.</p>
+      </article>
+      <article class="step reveal">
+        <span class="step__n">4</span>
+        <h3>Review and adjust</h3>
+        <p>Read the timeline together and decide what — and how far — to practise next.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="cta">
+  <div class="wrap cta__inner reveal">
+    <h2>Want to rehearse it here first?</h2>
+    <p>We're shaping the scenario library together with parents, special-education teachers and clinical researchers. Join the early trial.</p>
+    <form class="cta__form" id="waitlist">
+      <label class="sr-only" for="email">Email</label>
+      <input id="email" type="email" required placeholder="you@example.com" />
+      <button class="btn btn--primary" type="submit">Join the waitlist</button>
+    </form>
+    <p class="cta__msg" id="waitlistMsg" hidden>Noted — we'll be in touch. (Demo page: nothing was sent.)</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div>
+      <span class="brand brand--footer"><span class="brand__name">Sprout</span></span>
+      <p class="footer__note">Sprout is a research prototype. It is not a medical device and does not replace professional diagnosis or intervention. Please plan any training together with your clinician.</p>
+    </div>
+    <div class="footer__links">
+      <a href="#scenarios">Scenarios</a>
+      <a href="#tracking">Tracking</a>
+      <a href="#parents">For Parents</a>
+    </div>
+  </div>
+  <p class="footer__copy">© 2026 Sprout · Buildathon demo</p>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
