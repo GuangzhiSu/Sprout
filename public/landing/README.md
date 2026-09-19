@@ -21,7 +21,6 @@ A child on the spectrum, usually with a parent nearby. That decides the design:
   `See the tracking panel` for the grown-up. No feature lists, no marketing
   copy, no scrolling required to reach either one.
 - **Short, literal sentences.** No idioms, no metaphors, no pressure words.
-  "You can stop any time" stays on the page.
 - **Low sensory load.** Nothing moves on its own except a slow sun and slow
   clouds; the mascot moves only when it is touched. `prefers-reduced-motion`
   stops all of it.
