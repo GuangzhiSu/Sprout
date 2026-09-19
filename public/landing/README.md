@@ -17,10 +17,10 @@ assets/app.js     tapping the mascot changes its line
 
 A child on the spectrum, usually with a parent nearby. That decides the design:
 
-- **Two doors, nothing else.** `Start now!` goes to `/choose`, which asks who is
-  holding the device and then opens `/student` or `/parent`; `See the tracking
-  panel` goes straight to `/parent` for the grown-up. No feature lists, no
-  marketing copy, no scrolling required to reach either one.
+- **Two doors, nothing else.** `Start now!` opens `/student` for the child and
+  `See the tracking panel` opens `/parent` for the grown-up. The doors are the
+  only place the two are told apart, so nothing in between asks again. No
+  feature lists, no marketing copy, no scrolling required to reach either one.
 - **Short, literal sentences.** No idioms, no metaphors, no pressure words.
 - **Low sensory load.** Nothing moves on its own except a slow sun and slow
   clouds; the mascot moves only when it is touched. `prefers-reduced-motion`

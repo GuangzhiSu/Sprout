@@ -8,8 +8,7 @@ The interface accepts speech or typed input, asks the Doubao Ark model for three
 
 | Route | Who it is for | What it does |
 | --- | --- | --- |
-| `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practise, or the grown-ups' panel. |
-| `/choose` | either | One question — child or parent — between the landing page and the two dashboards. |
+| `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practise, or the grown-ups' panel. They are the only place the child and the caregiver are told apart, so nothing in between asks again. |
 | `/student` | the child | Scenario cards grouped by level. Tapping a ready card opens the practice screen. |
 | `/parent` | the caregiver | Status overview, SRS-2 score tracking with subscale detail, recent conversations. |
 | `/` | the child | The practice screen itself: scene, coach, suggestions, safety monitor. |

@@ -11,10 +11,10 @@ const icons: Record<Tone, typeof CircleCheck> = {
  * Green / amber / red always ships with its icon and its word — the colour
  * alone never carries the meaning.
  */
-export function StatusChip({ status, size }: { status: Status; size?: "sm" }) {
+export function StatusChip({ status, size }: { status: Status; size?: "sm" | "lg" }) {
   const Icon = icons[status.tone];
   return (
-    <span className={`status-chip status-chip--${status.tone}${size === "sm" ? " status-chip--sm" : ""}`}>
+    <span className={`status-chip status-chip--${status.tone}${size ? ` status-chip--${size}` : ""}`}>
       <Icon aria-hidden="true" />
       {status.label}
     </span>

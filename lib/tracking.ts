@@ -141,8 +141,6 @@ export type Status = {
   tone: Tone;
   /** Two or three words, shown next to the status icon. */
   label: string;
-  /** One sentence a parent can act on. */
-  detail: string;
 };
 
 /**
@@ -152,32 +150,10 @@ export type Status = {
  * questionnaire is reporting more difficulty than at baseline.
  */
 export function statusFor(result: CusumResult): Status {
-  if (result.high >= result.limit) {
-    return {
-      tone: "critical",
-      label: "Needs attention",
-      detail: "Scores have stayed above the baseline long enough to be a real change, not noise. Worth raising at the next appointment.",
-    };
-  }
-  if (result.high >= result.limit / 2) {
-    return {
-      tone: "warning",
-      label: "Worth watching",
-      detail: "Scores are drifting up. Not a signal yet — keep the questionnaire going and look again in two weeks.",
-    };
-  }
-  if (result.low >= result.limit) {
-    return {
-      tone: "good",
-      label: "Improving",
-      detail: "Scores have stayed below the baseline for several rounds, which reads as steady progress.",
-    };
-  }
-  return {
-    tone: "good",
-    label: "Steady",
-    detail: "Scores are moving within the usual range for this child. Nothing here needs a change of plan.",
-  };
+  if (result.high >= result.limit) return { tone: "critical", label: "Needs attention" };
+  if (result.high >= result.limit / 2) return { tone: "warning", label: "Worth watching" };
+  if (result.low >= result.limit) return { tone: "good", label: "Improving" };
+  return { tone: "good", label: "Steady" };
 }
 
 const toneRank: Record<Tone, number> = { good: 0, warning: 1, critical: 2 };
@@ -214,11 +190,11 @@ export function buildOverview(): Overview {
     .sort((a, b) => toneRank[b.status.tone] - toneRank[a.status.tone])
     .map(({ subscale, status }) => ({ subscale, status }));
 
+  /* The headline is the most severe state on the page, so a subscale drifting
+     up is never hidden behind a good total. Which subscale it is comes from the
+     flagged list beside it. */
   const worst = flagged[0];
-  const status: Status =
-    worst && toneRank[worst.status.tone] > toneRank[total.tone]
-      ? { ...worst.status, detail: `${worst.subscale.name}: ${worst.status.detail}` }
-      : total;
+  const status: Status = worst && toneRank[worst.status.tone] > toneRank[total.tone] ? worst.status : total;
 
   return {
     status,

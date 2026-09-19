@@ -40,10 +40,9 @@ export default function ParentPage() {
           <div className="card status-card">
             <div className="status-card__main">
               <div className="status-card__flag">
-                <StatusChip status={overview.status} />
+                <StatusChip status={overview.status} size="lg" />
                 <span className="pv__updated">as of {longDate(latest.date)}</span>
               </div>
-              <p className="status-card__detail">{overview.status.detail}</p>
 
               <div className="status-card__stats">
                 <div className="stat">
@@ -83,10 +82,6 @@ export default function ParentPage() {
 
             <aside className="status-card__legend">
               <h3>What the colour means</h3>
-              <p>
-                Each round is compared with the baseline and the differences are added up, so a single
-                unusual week does not move the light — only a run of them does.
-              </p>
               <ul className="legend-list">
                 <li>
                   <CircleCheck className="is-good" aria-hidden="true" />

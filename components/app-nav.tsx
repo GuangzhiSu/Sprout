@@ -1,4 +1,4 @@
-import { Bell, Sprout, Users } from "lucide-react";
+import { Bell, House, Sprout } from "lucide-react";
 
 type NavLink = { label: string; href: string };
 
@@ -52,17 +52,17 @@ export function AppNav({ variant, current }: Props) {
 
         {variant === "student" ? (
           <>
-            <a className="app-nav__icon" href="/choose" aria-label="Switch to a different profile">
-              <Users aria-hidden="true" />
+            <a className="app-nav__icon" href="/landing/" aria-label="Go back home">
+              <House aria-hidden="true" />
             </a>
-            <a className="app-nav__cta" href="/choose">Log in</a>
+            <a className="app-nav__cta" href="/landing/">Log in</a>
           </>
         ) : (
           <>
             <a className="app-nav__icon" href="/parent#conversations" aria-label="Recent activity">
               <Bell aria-hidden="true" />
             </a>
-            <a className="app-nav__avatar" href="/choose">
+            <a className="app-nav__avatar" href="/landing/">
               <span aria-hidden="true">LW</span>
               <span>Lin W.</span>
             </a>
