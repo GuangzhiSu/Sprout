@@ -401,7 +401,11 @@ export default function PlaygroundPractice() {
     recognition.continuous = false;
     recognition.onresult = (event) => {
       const transcript = Array.from(event.results).map((result) => result[0]?.transcript ?? "").join("").trim();
-      setTypedText(transcript);
+      setListening(false);
+      if (!transcript) {
+        setNotice("I didn’t catch that. Try again, or type your words below.");
+        return;
+      }
       void requestCoach(transcript);
     };
     recognition.onerror = () => {
@@ -535,49 +539,51 @@ export default function PlaygroundPractice() {
         <p><strong>{currentStage.label}:</strong> {currentStage.objective}</p>
       </section>
 
-      <section className="scene-content" aria-label={scenario.sceneAriaLabel}>
-        <img className="scenario-bg" src={scenario.image.src} alt={scenario.image.alt} />
-        <div className="peer-bubble" role="status" aria-live="polite">
-          <span>{coach.npcName} says</span>
-          <p>“{coach.peerReply}”</p>
-        </div>
-      </section>
+      <div className="practice-workspace">
+        <section className="scene-content" aria-label={scenario.sceneAriaLabel}>
+          <img className="scenario-bg" src={scenario.image.src} alt={scenario.image.alt} />
+          <div className="peer-bubble" role="status" aria-live="polite">
+            <span>{coach.npcName} says</span>
+            <p>“{coach.peerReply}”</p>
+          </div>
+        </section>
 
-      <section className="coach-dock" aria-label="Communication coach">
-        <div className="coach-head">
-          <h2 className="coach-label"><Sprout aria-hidden="true" /> Communication coach</h2>
-        </div>
+        <section className="coach-dock" aria-label="Communication coach">
+          <div className="coach-head">
+            <h2 className="coach-label"><Sprout aria-hidden="true" /> Communication coach</h2>
+          </div>
 
-        <div className="conversation-log" role="log" aria-label="Conversation history" aria-busy={thinking} ref={conversationRef}>
-          {conversation.map((turn, index) => (
-            <div className="conversation-turn" key={`${turn.npcName}-${index}`}>
-              {turn.heard && <p><strong>You:</strong> {turn.heard}</p>}
-              <p><strong>{turn.npcName}:</strong> {turn.peerReply}</p>
-            </div>
-          ))}
-          <p className="coach-note"><strong>Coach:</strong> {coach.coachNote}</p>
-          {thinking && <p className="coach-note" role="status">Thinking about what you meant…</p>}
-        </div>
+          <div className="conversation-log" role="log" aria-label="Conversation history" aria-busy={thinking} ref={conversationRef}>
+            {conversation.map((turn, index) => (
+              <div className="conversation-turn" key={`${turn.npcName}-${index}`}>
+                {turn.heard && <p><strong>You:</strong> {turn.heard}</p>}
+                <p><strong>{turn.npcName}:</strong> {turn.peerReply}</p>
+              </div>
+            ))}
+            <p className="coach-note"><strong>Coach:</strong> {coach.coachNote}</p>
+            {thinking && <p className="coach-note" role="status">Thinking about what you meant…</p>}
+          </div>
 
-        <div className="voice-row">
-          <button className={listening ? "mic-button mic-button--active" : "mic-button"} onClick={startListening} aria-pressed={listening} disabled={thinking}>
-            {listening ? <MicOff aria-hidden="true" /> : <Mic aria-hidden="true" />}
-            <span>{listening ? "Tap to stop" : "Say what you think"}</span>
-          </button>
-          <form onSubmit={submitText}>
-            <label htmlFor="practice-input" className="sr-only">Type what you want to say</label>
-            <input
-              id="practice-input"
-              value={typedText}
-              onChange={(event) => setTypedText(event.target.value)}
-              placeholder="Or type your own words…"
-              maxLength={180}
-            />
-            <button type="submit" disabled={!typedText.trim() || thinking}>Send</button>
-          </form>
-        </div>
-        {notice && <p className="notice" role="status">{notice}</p>}
-      </section>
+          <div className="voice-row">
+            <button className={listening ? "mic-button mic-button--active" : "mic-button"} onClick={startListening} aria-pressed={listening} disabled={thinking}>
+              {listening ? <MicOff aria-hidden="true" /> : <Mic aria-hidden="true" />}
+              <span>{listening ? "Tap to stop" : "Say what you think"}</span>
+            </button>
+            <form onSubmit={submitText}>
+              <label htmlFor="practice-input" className="sr-only">Type what you want to say</label>
+              <input
+                id="practice-input"
+                value={typedText}
+                onChange={(event) => setTypedText(event.target.value)}
+                placeholder="Or type your own words…"
+                maxLength={180}
+              />
+              <button type="submit" disabled={!typedText.trim() || thinking}>Send</button>
+            </form>
+          </div>
+          {notice && <p className="notice" role="status">{notice}</p>}
+        </section>
+      </div>
 
       <AlertDialog open={safetyOpen} onOpenChange={(open) => {
         setSafetyOpen(open);

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowDown, CircleAlert, CircleCheck, TriangleAlert } from "lucide-react";
+import { ArrowDown, ChevronDown, CircleAlert, CircleCheck, TriangleAlert } from "lucide-react";
 import { AppNav } from "@/components/app-nav";
 import { ChildLine } from "@/components/child-line";
 import { StatusChip } from "@/components/status-chip";
@@ -45,40 +45,47 @@ export default function ParentPage() {
                 <span className="pv__updated">as of {longDate(latest.date)}</span>
               </div>
 
-              <div className="status-card__stats">
-                <div className="stat">
-                  <p className="stat__label">Latest total</p>
-                  <p className="stat__value">
-                    {latest.value}
-                    <small>T-score</small>
-                    {sincePrevious > 0 && (
-                      <span className="stat__delta stat__delta--good">
-                        <ArrowDown aria-hidden="true" />{sincePrevious} vs last round
-                      </span>
-                    )}
-                  </p>
-                  <p className="stat__note">Lower means less reported difficulty</p>
-                </div>
+              <details className="status-details">
+                <summary>
+                  <span className="status-details__show">Show details</span>
+                  <span className="status-details__hide">Hide details</span>
+                  <ChevronDown aria-hidden="true" />
+                </summary>
+                <div className="status-card__stats">
+                  <div className="stat">
+                    <p className="stat__label">Latest total</p>
+                    <p className="stat__value">
+                      {latest.value}
+                      <small>T-score</small>
+                      {sincePrevious > 0 && (
+                        <span className="stat__delta stat__delta--good">
+                          <ArrowDown aria-hidden="true" />{sincePrevious} vs last round
+                        </span>
+                      )}
+                    </p>
+                    <p className="stat__note">Lower means less reported difficulty</p>
+                  </div>
 
-                <div className="stat">
-                  <p className="stat__label">Since baseline</p>
-                  <p className="stat__value">
-                    {sinceBaseline > 0 ? "−" : "+"}{Math.abs(sinceBaseline)}
-                    <small>points</small>
-                  </p>
-                  <p className="stat__note">Baseline {result.target}, set by the first four rounds</p>
-                </div>
+                  <div className="stat">
+                    <p className="stat__label">Since baseline</p>
+                    <p className="stat__value">
+                      {sinceBaseline > 0 ? "−" : "+"}{Math.abs(sinceBaseline)}
+                      <small>points</small>
+                    </p>
+                    <p className="stat__note">Baseline {result.target}, set by the first four rounds</p>
+                  </div>
 
-                <div className="stat">
-                  <p className="stat__label">Areas flagged</p>
-                  <p className="stat__value">{overview.flagged.length}<small>of {overview.bySubscale.length}</small></p>
-                  <p className="stat__note">
-                    {overview.flagged.length > 0
-                      ? overview.flagged.map((entry) => entry.subscale.name).join(", ")
-                      : "Nothing drifting up right now"}
-                  </p>
+                  <div className="stat">
+                    <p className="stat__label">Areas flagged</p>
+                    <p className="stat__value">{overview.flagged.length}<small>of {overview.bySubscale.length}</small></p>
+                    <p className="stat__note">
+                      {overview.flagged.length > 0
+                        ? overview.flagged.map((entry) => entry.subscale.name).join(", ")
+                        : "Nothing drifting up right now"}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </details>
             </div>
 
             <aside className="status-card__legend">

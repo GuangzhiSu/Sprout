@@ -99,10 +99,7 @@ export default function StudentPage() {
 
         <section id="help">
           <p className="dash-foot">
-            <a className="dash-foot__link" href="/tutorial?again=1">Watch the tour again</a> if you would
-            like a reminder of how this works. Need help? Ask the grown-up next to you — they can open the tracking panel from the
-            same screen. Sprout is a research prototype. It is not a medical device and does not
-            replace professional diagnosis or intervention.
+            <a className="dash-foot__link" href="/tutorial?again=1">Watch the tour again</a>.
           </p>
         </section>
       </div>
