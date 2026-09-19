@@ -9,10 +9,12 @@
   flex-direction: column;
   height: 100svh;
   overflow: hidden;
-  background: var(--mint-soft);
+  background: #DDECE6;
 }
 
 .topbar {
+  position: relative;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -86,33 +88,41 @@
   border-radius: var(--r-md) var(--r-md) var(--r-md) 4px;
   background: var(--surface);
   color: var(--ink);
-  box-shadow: var(--shadow);
+  box-shadow: 0 10px 28px rgba(33, 49, 58, .12);
   overflow-wrap: anywhere;
 }
 .peer-bubble span { color: var(--teal-deep); font-size: .78rem; font-weight: 800; }
 .peer-bubble p { margin: 5px 0 0; font-family: "Baloo 2", "Nunito", sans-serif; font-size: 1.3rem; line-height: 1.35; }
 
 .coach-dock {
-  flex: 0 0 auto;
-  padding: 16px max(28px, calc((100% - 1064px) / 2)) 18px;
-  border-top: 1px solid var(--line);
-  background: var(--surface);
+  position: absolute;
+  z-index: 4;
+  right: 24px;
+  bottom: 24px;
+  left: 24px;
+  width: min(1060px, calc(100% - 48px));
+  margin-inline: auto;
+  padding: 18px 20px 20px;
+  border: 1px solid rgba(255, 255, 255, .9);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .97);
+  box-shadow: 0 18px 44px rgba(33, 49, 58, .18);
 }
-.coach-label { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; color: var(--teal-deep); font-family: "Baloo 2", "Nunito", sans-serif; font-size: 1.45rem; font-weight: 700; }
-.coach-label svg { width: 27px; height: 27px; }
-.conversation-log { height: 112px; overflow-y: auto; overflow-wrap: anywhere; scrollbar-color: var(--teal) transparent; }
+.coach-label { display: flex; align-items: center; gap: 12px; margin: 0 0 10px; color: var(--teal-deep); font-family: "Baloo 2", "Nunito", sans-serif; font-size: 1.45rem; font-weight: 700; }
+.coach-label svg { box-sizing: content-box; width: 23px; height: 23px; padding: 7px; border-radius: 12px; background: var(--mint-soft); }
+.conversation-log { height: 104px; overflow-y: auto; overflow-wrap: anywhere; scrollbar-color: var(--teal) transparent; }
 .conversation-turn { padding: 2px 0 8px 14px; border-left: 3px solid var(--mint); }
 .conversation-turn + .conversation-turn { margin-top: 8px; }
 .conversation-turn p { margin: 3px 0; line-height: 1.5; font-size: 1.08rem; }
 .conversation-turn strong { font-weight: 800; }
 .conversation-turn .coach-note, .coach-note { color: var(--ink-2); font-size: .98rem; }
-.voice-row { display: flex; align-items: stretch; gap: 14px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+.voice-row { display: flex; align-items: stretch; gap: 12px; margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); }
 .mic-button, .primary-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 48px;
+  min-height: 50px;
   padding: 12px 20px;
   border: 1px solid var(--mint);
   border-radius: 999px;
@@ -125,7 +135,7 @@
 .mic-button--active:hover { background: #F8D7D2; }
 .mic-button svg, .primary-button svg { width: 20px; height: 20px; flex: none; }
 .voice-row form { display: flex; flex: 1; min-width: 0; gap: 10px; }
-.voice-row input { flex: 1; min-width: 0; min-height: 48px; padding: 12px 18px; border: 1px solid var(--line); border-radius: 999px; background: #F5F8F9; color: var(--ink); }
+.voice-row input { flex: 1; min-width: 0; min-height: 50px; padding: 12px 18px; border: 1px solid #D5E1E5; border-radius: 999px; background: #F7FAFA; color: var(--ink); }
 .voice-row input::placeholder { color: #637981; }
 .voice-row form button { padding: 10px 24px; border: 0; border-radius: 999px; background: var(--teal-deep); color: white; font-weight: 800; }
 .voice-row form button:hover { background: #245D6D; }
@@ -156,9 +166,10 @@
   .scene-content { min-height: 0; }
   .scenario-bg { object-position: 58% center; }
   .peer-bubble { margin: 20px 20px 20px auto; }
-  .coach-dock { padding: 14px 20px 16px; }
+  .coach-dock { right: 12px; bottom: 12px; left: 12px; width: calc(100% - 24px); padding: 14px 16px 16px; border-radius: 20px; }
   .coach-label { margin-bottom: 6px; font-size: 1.35rem; }
-  .conversation-log { height: 96px; }
+  .coach-label svg { width: 21px; height: 21px; padding: 6px; }
+  .conversation-log { height: 88px; }
   .conversation-turn p { font-size: 1rem; }
   .conversation-turn .coach-note, .coach-note { font-size: .92rem; }
   .voice-row { flex-direction: column; }
@@ -167,16 +178,16 @@
   .voice-row form button { padding-inline: 20px; }
 }
 @media (max-width: 420px) {
-  .topbar { align-items: flex-start; }
-  .status-row { max-width: 196px; }
+  .status-pill { width: 42px; height: 42px; min-height: 42px; justify-content: center; padding: 0; }
+  .status-pill__label { display: none; }
   .peer-bubble { max-width: calc(100% - 32px); margin: 16px; }
-  .coach-dock { padding-inline: 16px; }
+  .coach-dock { padding-inline: 14px; }
   .session-end h1 { font-size: 1.9rem; }
 }
 
 @media (max-height: 700px) {
   .topbar { min-height: 62px; padding-block: 8px; }
-  .coach-dock { padding-block: 10px 12px; }
-  .conversation-log { height: 76px; }
+  .coach-dock { bottom: 10px; padding-block: 10px 12px; }
+  .conversation-log { height: 112px; }
   .voice-row { margin-top: 8px; padding-top: 8px; }
 }

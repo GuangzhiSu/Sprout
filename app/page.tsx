@@ -400,19 +400,27 @@ export default function Home() {
             type="button"
             className="icon-button"
             onClick={toggleBackgroundMuted}
-            aria-label="Mute background audio"
+            aria-label={backgroundMuted ? "Unmute background audio" : "Mute background audio"}
             aria-pressed={backgroundMuted}
             title={backgroundMuted ? "Unmute background audio" : "Mute background audio"}
           >
             {backgroundMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
           </button>
-          <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
+          <span
+            className={listening ? "status-pill status-pill--active" : "status-pill"}
+            aria-label={listening ? "Microphone listening" : "Microphone ready"}
+          >
             {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
-            {listening ? "Listening" : "Mic ready"}
+            <span className="status-pill__label">{listening ? "Listening" : "Mic ready"}</span>
           </span>
-          <span className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}>
+          <span
+            className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}
+            aria-label={cameraOn ? (monitorPaused ? "Monitor paused" : "Monitor on") : "Monitor off"}
+          >
             {cameraOn ? <Camera aria-hidden="true" /> : <CameraOff aria-hidden="true" />}
-            {cameraOn ? (monitorPaused ? "Monitor paused" : "Monitor on") : "Monitor off"}
+            <span className="status-pill__label">
+              {cameraOn ? (monitorPaused ? "Monitor paused" : "Monitor on") : "Monitor off"}
+            </span>
           </span>
         </div>
       </header>
@@ -424,39 +432,38 @@ export default function Home() {
           <p>“{coach.peerReply}”</p>
         </div>
 
-      </section>
+        <section className="coach-dock" aria-label="Communication coach">
+          <h2 className="coach-label"><Sprout aria-hidden="true" /> Communication coach</h2>
+          <div className="conversation-log" role="log" aria-label="Conversation history" aria-busy={thinking} ref={conversationRef}>
+            {conversation.map((turn, index) => (
+              <div className="conversation-turn" key={index}>
+                {turn.heard && <p><strong>You:</strong> {turn.heard}</p>}
+                <p><strong>Friend:</strong> {turn.peerReply}</p>
+                <p className="coach-note"><strong>Coach:</strong> {turn.coachNote}</p>
+              </div>
+            ))}
+          </div>
+          {thinking && <p className="coach-note" role="status">Thinking...</p>}
 
-      <section className="coach-dock" aria-label="Communication coach">
-        <h2 className="coach-label"><Sprout aria-hidden="true" /> Communication coach</h2>
-        <div className="conversation-log" role="log" aria-label="Conversation history" aria-busy={thinking} ref={conversationRef}>
-          {conversation.map((turn, index) => (
-            <div className="conversation-turn" key={index}>
-              {turn.heard && <p><strong>You:</strong> {turn.heard}</p>}
-              <p><strong>Friend:</strong> {turn.peerReply}</p>
-              <p className="coach-note"><strong>Coach:</strong> {turn.coachNote}</p>
-            </div>
-          ))}
-        </div>
-        {thinking && <p className="coach-note" role="status">Thinking...</p>}
-
-        <div className="voice-row">
-          <button className={listening ? "mic-button mic-button--active" : "mic-button"} onClick={startListening} aria-pressed={listening} disabled={thinking}>
-            {listening ? <MicOff aria-hidden="true" /> : <Mic aria-hidden="true" />}
-            <span>{listening ? "Tap to stop" : "Press, then say what you think"}</span>
-          </button>
-          <form onSubmit={submitText}>
-            <label htmlFor="practice-input" className="sr-only">Type what you want to say</label>
-            <input
-              id="practice-input"
-              value={typedText}
-              onChange={(event) => setTypedText(event.target.value)}
-              placeholder="Or type what you want to say…"
-              maxLength={120}
-            />
-            <button type="submit" disabled={!typedText.trim() || thinking}>Send</button>
-          </form>
-        </div>
-        {notice && <p className="notice" role="status">{notice}</p>}
+          <div className="voice-row">
+            <button className={listening ? "mic-button mic-button--active" : "mic-button"} onClick={startListening} aria-pressed={listening} disabled={thinking}>
+              {listening ? <MicOff aria-hidden="true" /> : <Mic aria-hidden="true" />}
+              <span>{listening ? "Tap to stop" : "Press, then say what you think"}</span>
+            </button>
+            <form onSubmit={submitText}>
+              <label htmlFor="practice-input" className="sr-only">Type what you want to say</label>
+              <input
+                id="practice-input"
+                value={typedText}
+                onChange={(event) => setTypedText(event.target.value)}
+                placeholder="Or type what you want to say…"
+                maxLength={120}
+              />
+              <button type="submit" disabled={!typedText.trim() || thinking}>Send</button>
+            </form>
+          </div>
+          {notice && <p className="notice" role="status">{notice}</p>}
+        </section>
       </section>
 
       <AlertDialog open={safetyOpen} onOpenChange={(open) => {
