@@ -1,38 +1,42 @@
 # Landing page
 
-Static marketing page for the project, served by Next.js from `public/`:
+The page a child meets first. Served by Next.js from `public/`:
 
-- dev / production URL: `/landing/`
-- local, without the app: `python3 -m http.server 8000 --directory public/landing`
+- URL: `/landing/`
+- standalone: `python3 -m http.server 3000 --directory public/landing`
 
 No build step and no dependencies — plain HTML, CSS and one small script.
 
 ```
-index.html        structure and copy
-assets/styles.css design tokens (colour, radius, shadow), components, responsive rules
-assets/app.js     scenario tabs, scroll reveal, waitlist form (demo only, sends nothing)
+index.html        the whole page: mascot, greeting, two doors
+assets/styles.css scenery, mascot, doors, responsive rules
+assets/app.js     tapping the mascot changes its line
 ```
 
-## Conventions
+## Who it is for
 
-- Colours follow the visual reference: light, high-brightness / low-saturation.
-  Every colour is a CSS variable on `:root` (`--teal / --mint / --green / --blush /
-  --coral / --lav / --cream`), so re-theming happens in one place.
-- Layout follows the wireframe: top nav (site name, links, icon button, dark log-in
-  pill) and a centred start button in the hero.
-- Copy lives directly in `index.html` and is English only.
+A child on the spectrum, usually with a parent nearby. That decides the design:
 
-## Sections
+- **Two doors, nothing else.** `Start a rehearsal` for the child,
+  `See the tracking panel` for the grown-up. No feature lists, no marketing
+  copy, no scrolling required to reach either one.
+- **Short, literal sentences.** No idioms, no metaphors, no pressure words.
+  "You can stop any time" stays on the page.
+- **Low sensory load.** Nothing moves on its own except a slow sun and slow
+  clouds; the mascot moves only when it is touched. `prefers-reduced-motion`
+  stops all of it.
+- **Big targets.** Both doors are large enough for an unsteady tap, with a
+  visible press state and a dashed focus ring for keyboard use.
+- **Soft, high-brightness / low-saturation palette** with dark text, so it
+  stays calm without losing contrast.
 
-1. Hero — positioning, start button, and an interactive scenario card
-   (checkout / group work / first chat)
-2. Why — the three pain points
-3. Capabilities — agents with personality, optional multimodal sensing,
-   clinician agent, tracking, personalised plans, a safe exit
-4. Scenarios — library cards tagged core / bonus with levels
-5. Tracking — panel mock: KPI tiles plus an engagement curve with peak and dip markers
-6. Parents — the four steps of parent co-design
-7. CTA + footer — waitlist and the disclaimer
+Every colour is a CSS variable on `:root`, so re-theming happens in one place.
+
+## If you add to this page
+
+Keep it to one screen and keep the two doors as the only choices. Anything that
+explains the product to an adult belongs elsewhere — a child does not need it,
+and it is what makes a page feel busy.
 
 The footer disclaimer (research prototype, not a medical device) is deliberate —
 please keep it.
