@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowDown, CircleAlert, CircleCheck, TriangleAlert } from "lucide-react";
 import { AppNav } from "@/components/app-nav";
+import { ChildLine } from "@/components/child-line";
 import { StatusChip } from "@/components/status-chip";
 import { ConversationLog } from "@/components/conversation-log";
 import { SubscaleDetails, TotalScorePanel } from "@/components/tracking";
@@ -25,7 +26,7 @@ export default function ParentPage() {
         <header className="pv__head">
           <div>
             <h1 className="pv__title display">How things are going</h1>
-            <p className="pv__sub">Ming · 8 years old · {totalScore.length} questionnaires since April</p>
+            <ChildLine questionnaires={totalScore.length} />
           </div>
           <p className="pv__updated">Last updated {longDate(latest.date)}</p>
         </header>

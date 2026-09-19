@@ -82,7 +82,18 @@ export default function TutorialPage() {
   const index = STEPS.indexOf(step);
   const go = (to: Step) => setStep(to);
   const next = () => go(STEPS[Math.min(index + 1, STEPS.length - 1)]);
-  const decline = (question: "name" | "age" | "likes") => setDeclined(question);
+  /* Declining has to clear the field as well as acknowledge the answer: a
+     child who types two letters and then says no has not told us their name,
+     and neither has one replaying the tour who now declines. */
+  const decline = (question: "name" | "age" | "likes") => {
+    setDraft((current) => ({
+      ...current,
+      ...(question === "name" ? { name: "" } : {}),
+      ...(question === "age" ? { age: null } : {}),
+      ...(question === "likes" ? { likes: [] } : {}),
+    }));
+    setDeclined(question);
+  };
   const carryOn = () => {
     setDeclined(null);
     next();

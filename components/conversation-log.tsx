@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Clock, MessageSquare, Sparkles } from "lucide-react";
+import { useChildLabel } from "@/components/child-line";
 import { conversations, duration, longDate, shortDate, type Turn } from "@/lib/tracking";
 
-const speakers: Record<Turn["from"], { name: string; initials: string }> = {
-  child: { name: "Ming", initials: "M" },
+const speakers: Record<Exclude<Turn["from"], "child">, { name: string; initials: string }> = {
   peer: { name: "New friend", initials: "NF" },
   coach: { name: "Sprout", initials: "S" },
 };
@@ -17,6 +17,8 @@ const speakers: Record<Turn["from"], { name: string; initials: string }> = {
  * they are the app talking rather than a third person in the room.
  */
 export function ConversationLog() {
+  /* The child is named only if they gave a name in the tutorial. */
+  const child = useChildLabel();
   const [openId, setOpenId] = useState(conversations[0].id);
   const open = conversations.find((entry) => entry.id === openId) ?? conversations[0];
 
@@ -60,7 +62,7 @@ export function ConversationLog() {
 
         <ol className="chat__thread">
           {open.turns.map((turn, index) => {
-            const speaker = speakers[turn.from];
+            const speaker = turn.from === "child" ? child : speakers[turn.from];
             if (turn.from === "coach") {
               return (
                 <li className="chat-turn chat-turn--coach" key={index}>
