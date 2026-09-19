@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Play Together · Playground Communication Practice",
-  description: "Scenario-based communication practice, reply suggestions, and supportive visual safety alerts for autistic children.",
+  title: "Sprout · Adaptive Playground Practice",
+  description: "Structured, adaptive playground communication practice with gradual prompts and multiple valid ways to respond.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

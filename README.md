@@ -1,8 +1,10 @@
 # Play Together
 
-An English-language, scenario-based communication practice experience for autistic children and their caregivers. The first release contains one complete scenario: meeting peers and joining play at a playground.
+An English-language, scenario-based communication practice experience for autistic children and their caregivers. The first release contains one complete adaptive scenario: meeting peers and joining play at a playground.
 
-The interface accepts speech or typed input, asks the Doubao Ark model for a short coaching note and peer reply, and optionally checks camera frames for clear observable signs that the activity should pause. The safety monitor is an assistive prompt, not a medical or emotional diagnosis.
+The interface accepts speech or typed input and uses Doubao Ark inside a controlled state machine. An interaction analyzer identifies communicative intent, the scenario manager owns progression and prompt fading, and a separate NPC language step produces short in-character replies. A background visual check can surface a pause prompt when it sees a clear observable concern. It is not a medical or emotional diagnosis.
+
+The complete product and conversation design—including NPCs, state machine, difficulty rules, examples, backend architecture, data model, system prompt, and pseudocode—is documented in [`PLAYGROUND_SCENARIO_DESIGN.md`](./PLAYGROUND_SCENARIO_DESIGN.md).
 
 ## Screens
 
@@ -39,10 +41,9 @@ A course either names a scenario registered in `lib/scenarios.ts` or carries
 "Coming soon" once the first is finished, and the later levels stay locked until those
 scenarios are written.
 
-Progress lives in the browser (`lib/progress.ts`, a `localStorage`-backed external store
-read with `useSyncExternalStore`), not in an account: reaching the end of a practice
-session marks that course finished on that device, and nothing more. Every read and
-write is guarded, since storage can be blocked.
+Course unlocking is mirrored in the browser for immediate dashboard feedback. Structured
+practice metrics and adaptive difficulty live in D1 under the authenticated Site user,
+so progress can survive across sessions. Raw child transcripts are not stored.
 
 ## Tracking
 
@@ -63,7 +64,7 @@ screens render the same on the server and in the browser.
 
 ## Scenario architecture
 
-Scenario content and model context live in `lib/scenarios.ts`. Both the practice UI and server routes use the same scenario ID and definition, so new scenarios can be added without duplicating prompts or screen copy. Only `playground` is registered and exposed in this release.
+Scenario content and NPC definitions live in `lib/scenarios.ts`; deterministic progression and adaptation live in `lib/playground-engine.ts`. Both the practice UI and server routes use the same scenario ID and state. Only `playground` is registered and exposed in this release.
 
 ## Environment
 
