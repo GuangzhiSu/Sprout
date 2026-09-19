@@ -9,6 +9,8 @@ import {
   Mic,
   MicOff,
   Sprout,
+  Video,
+  VideoOff,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -550,42 +552,48 @@ export default function PlaygroundPractice() {
     <main className="scenario-shell">
       <video ref={videoRef} className="background-monitor-video" muted playsInline aria-hidden="true" />
 
-      <header className="topbar">
-        <button className="exit-button" onClick={exitPractice}>
-          <LogOut aria-hidden="true" /> Exit
-        </button>
-        <div className="status-row" aria-label="Practice status">
-          <button
-            type="button"
-            className="icon-button"
-            onClick={() => setBackgroundMuted((value) => !value)}
-            aria-label={backgroundMuted ? "Turn on playground sounds" : "Mute playground sounds"}
-            aria-pressed={backgroundMuted}
-          >
-            {backgroundMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+      <div className="scenario-chrome">
+        <header className="topbar">
+          <button className="exit-button" onClick={exitPractice}>
+            <LogOut aria-hidden="true" /> Exit
           </button>
-          <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
-            {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
-            <span className="status-pill__label">{listening ? "Listening" : "Mic ready"}</span>
-          </span>
-        </div>
-      </header>
-
-      <section className="stage-strip" aria-label="Practice steps">
-        <ol>
-          {visibleStages.map((stage, index) => (
-            <li
-              key={stage.id}
-              className={index < currentStageIndex ? "stage-done" : index === currentStageIndex ? "stage-current" : ""}
-              aria-current={index === currentStageIndex ? "step" : undefined}
+          <div className="status-row" aria-label="Practice status">
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => setBackgroundMuted((value) => !value)}
+              aria-label={backgroundMuted ? "Turn on playground sounds" : "Mute playground sounds"}
+              aria-pressed={backgroundMuted}
             >
-              <span>{index < currentStageIndex ? <Check aria-hidden="true" /> : index + 1}</span>
-              <small>{stage.label}</small>
-            </li>
-          ))}
-        </ol>
-        <p><strong>{currentStage.label}:</strong> {currentStage.objective}</p>
-      </section>
+              {backgroundMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+            </button>
+            <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
+              {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
+              <span className="status-pill__label">{listening ? "Listening" : "Mic ready"}</span>
+            </span>
+            <span className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}>
+              {cameraOn && !monitorPaused ? <Video aria-hidden="true" /> : <VideoOff aria-hidden="true" />}
+              <span className="status-pill__label">{cameraOn && !monitorPaused ? "Monitor on" : "Monitor off"}</span>
+            </span>
+          </div>
+        </header>
+
+        <section className="stage-strip" aria-label="Practice steps">
+          <ol>
+            {visibleStages.map((stage, index) => (
+              <li
+                key={stage.id}
+                className={index < currentStageIndex ? "stage-done" : index === currentStageIndex ? "stage-current" : ""}
+                aria-current={index === currentStageIndex ? "step" : undefined}
+              >
+                <span>{index < currentStageIndex ? <Check aria-hidden="true" /> : index + 1}</span>
+                <small>{stage.label}</small>
+              </li>
+            ))}
+          </ol>
+          <p><strong>{currentStage.label}:</strong> {currentStage.objective}</p>
+        </section>
+      </div>
 
       <div className="practice-workspace">
         <section className="scene-content" aria-label={scenario.sceneAriaLabel}>
