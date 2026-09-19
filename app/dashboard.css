@@ -9,7 +9,7 @@
    re-theme is one block.
    ========================================================================== */
 
-.dash {
+.dash, .scenario-shell, .session-end, .safety-dialog {
   /* product palette (mirrors public/landing/assets/styles.css) */
   --teal:       #7CBFD0;
   --teal-soft:  #E4F2F6;
@@ -51,7 +51,9 @@
   --r-sm: 14px;
   --shadow: 0 14px 34px rgba(33, 49, 58, .09);
   --shadow-lift: 0 20px 44px rgba(33, 49, 58, .16);
+}
 
+.dash {
   min-height: 100svh;
   color: var(--ink);
   font-family: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;

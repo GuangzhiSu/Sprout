@@ -9,6 +9,7 @@ import {
   Mic,
   MicOff,
   RotateCcw,
+  Sprout,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -263,28 +264,42 @@ export default function Home() {
     setCameraOn(false);
   }, []);
 
-  const startBackgroundMonitor = useCallback(async () => {
-    if (streamRef.current || !navigator.mediaDevices?.getUserMedia) return;
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setCameraOn(true);
-      setMonitorPaused(false);
-    } catch {
-      // Camera access is optional. Do not interrupt the practice experience.
-    }
-  }, []);
-
   useEffect(() => {
-    if (!sessionEnded) void startBackgroundMonitor();
-  }, [sessionEnded, startBackgroundMonitor]);
+    if (sessionEnded || !navigator.mediaDevices?.getUserMedia) return;
+    let cancelled = false;
+    let activeStream: MediaStream | null = null;
+    const start = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false,
+        });
+        // Permission can resolve after Exit or after this page has unmounted.
+        if (cancelled) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        activeStream = stream;
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+        }
+        if (!cancelled) {
+          setCameraOn(true);
+          setMonitorPaused(false);
+        }
+      } catch {
+        // Camera access is optional. Do not interrupt the practice experience.
+      }
+    };
+    void start();
+    return () => {
+      cancelled = true;
+      activeStream?.getTracks().forEach((track) => track.stop());
+      if (streamRef.current === activeStream) streamRef.current = null;
+    };
+  }, [sessionEnded]);
 
   useEffect(() => {
     if (!cameraOn || monitorPaused) return;
@@ -363,6 +378,7 @@ export default function Home() {
           }}>
             <RotateCcw aria-hidden="true" /> Start again
           </button>
+          <a className="session-end__back" href="/student">Back to scenarios</a>
         </div>
       </main>
     );
@@ -370,8 +386,6 @@ export default function Home() {
 
   return (
     <main className="scenario-shell">
-      <img className="scenario-bg" src={scenario.image.src} alt={scenario.image.alt} />
-      <div className="scenario-wash" aria-hidden="true" />
       <video ref={videoRef} className="background-monitor-video" muted playsInline aria-hidden="true" />
 
       <header className="topbar">
@@ -401,6 +415,7 @@ export default function Home() {
       </header>
 
       <section className="scene-content" aria-label={scenario.sceneAriaLabel}>
+        <img className="scenario-bg" src={scenario.image.src} alt={scenario.image.alt} />
         <div className="peer-bubble" role="status" aria-live="polite">
           <span>{scenario.opening.peerLabel}</span>
           <p>“{coach.peerReply}”</p>
@@ -409,7 +424,7 @@ export default function Home() {
       </section>
 
       <section className="coach-dock" aria-label="Communication coach">
-        <h2 className="coach-label">Communication coach</h2>
+        <h2 className="coach-label"><Sprout aria-hidden="true" /> Communication coach</h2>
         <div className="conversation-log" role="log" aria-label="Conversation history" aria-busy={thinking} ref={conversationRef}>
           {conversation.map((turn, index) => (
             <div className="conversation-turn" key={index}>
