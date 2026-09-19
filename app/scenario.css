@@ -93,9 +93,9 @@
   align-items: center;
   gap: 28px;
   width: calc(100% - 32px);
-  min-height: 96px;
-  margin: 10px auto 12px;
-  padding: 16px max(24px, calc((100% - 1180px) / 2));
+  min-height: 78px;
+  margin: 7px auto 9px;
+  padding: 10px max(24px, calc((100% - 1180px) / 2));
   box-sizing: border-box;
   border: 0;
   border-radius: 8px;
@@ -110,7 +110,7 @@
   padding: 0;
   list-style: none;
 }
-.stage-strip li { position: relative; display: grid; justify-items: center; gap: 4px; color: #6b7f82; }
+.stage-strip li { position: relative; display: grid; justify-items: center; gap: 2px; color: #6b7f82; }
 .stage-strip li::before {
   content: "";
   position: absolute;
@@ -138,7 +138,7 @@
   transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
 .stage-strip li > span svg { width: 15px; }
-.stage-strip li small { font-size: .73rem; font-weight: 800; text-align: center; }
+.stage-strip li small { font-size: .73rem; font-weight: 800; line-height: 1.2; text-align: center; }
 .stage-strip .stage-done::before, .stage-strip .stage-current::before { background: var(--teal); }
 .stage-strip .stage-done > span { border-color: var(--teal); background: var(--teal); color: white; }
 .stage-strip .stage-current > span { border-color: #d0a73f; background: var(--sun); color: var(--ink); box-shadow: 0 0 0 4px rgba(255, 218, 129, .28), 0 3px 9px rgba(33, 74, 65, .1); }
