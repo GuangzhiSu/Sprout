@@ -457,7 +457,7 @@ a.course-card:active { transform: translateY(2px); box-shadow: 0 4px 0 rgba(33, 
 .dash-foot { max-width: 70ch; margin-top: 8px; color: var(--muted); font-size: .76rem; line-height: 1.6; }
 .dash-foot__link { color: var(--teal-deep); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 .score-disclaimer {
-  max-width: 84ch; margin: 18px 4px 0; padding: 12px 14px;
+  width: 100%; margin: 18px 0 0; padding: 12px 14px;
   border-left: 3px solid var(--teal); background: rgba(231, 246, 241, .56);
   color: var(--muted); font-size: .8rem; line-height: 1.55;
 }
