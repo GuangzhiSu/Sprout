@@ -1,4 +1,4 @@
-# Play Together
+# Sprout
 
 An English-language, scenario-based communication practice experience for autistic children and their caregivers. The first release contains one complete adaptive scenario: meeting peers and joining play at a playground.
 
