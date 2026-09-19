@@ -45,8 +45,8 @@ import { getDifficulty, playgroundScenario } from "@/lib/scenarios";
 // (crying / pain) and deliberately ignore everything a face-only FER model
 // cannot judge (pose, falls, hazards, looking away, and so on).
 const FACE_MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model";
-const DISTRESS_THRESHOLD = 0.5; // min probability for an upset expression
-const DISTRESS_STREAK = 1; // consecutive checks required before alerting
+const DISTRESS_THRESHOLD = 0.7; // min probability for an upset expression
+const DISTRESS_STREAK = 2; // consecutive checks required before alerting
 const SAFETY_INTERVAL_MS = 2500;
 
 let faceApiPromise: Promise<typeof import("@vladmandic/face-api")> | null = null;
