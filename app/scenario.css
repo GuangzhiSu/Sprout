@@ -7,7 +7,8 @@
 .scenario-shell {
   display: flex;
   flex-direction: column;
-  min-height: 100svh;
+  height: 100svh;
+  overflow: hidden;
   background: var(--mint-soft);
 }
 
@@ -16,8 +17,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 78px;
-  padding: 16px 28px;
+  min-height: 70px;
+  padding: 12px 28px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
@@ -73,7 +74,7 @@
 }
 
 .background-monitor-video { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.scene-content { position: relative; flex: 1; min-height: 440px; }
+.scene-content { position: relative; flex: 1 1 auto; min-height: 0; }
 .scenario-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 52%; }
 .peer-bubble {
   position: relative;
@@ -92,19 +93,20 @@
 .peer-bubble p { margin: 5px 0 0; font-family: "Baloo 2", "Nunito", sans-serif; font-size: 1.3rem; line-height: 1.35; }
 
 .coach-dock {
-  padding: 20px max(28px, calc((100% - 1064px) / 2)) 24px;
+  flex: 0 0 auto;
+  padding: 16px max(28px, calc((100% - 1064px) / 2)) 18px;
   border-top: 1px solid var(--line);
   background: var(--surface);
 }
-.coach-label { display: flex; align-items: center; gap: 9px; margin: 0 0 12px; color: var(--teal-deep); font-family: "Baloo 2", "Nunito", sans-serif; font-size: 1.25rem; font-weight: 700; }
-.coach-label svg { width: 24px; height: 24px; }
-.conversation-log { height: 152px; overflow-y: auto; overflow-wrap: anywhere; scrollbar-color: var(--teal) transparent; }
-.conversation-turn { padding: 4px 0 12px 14px; border-left: 3px solid var(--mint); }
-.conversation-turn + .conversation-turn { margin-top: 12px; }
-.conversation-turn p { margin: 4px 0; line-height: 1.6; font-size: .95rem; }
+.coach-label { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; color: var(--teal-deep); font-family: "Baloo 2", "Nunito", sans-serif; font-size: 1.45rem; font-weight: 700; }
+.coach-label svg { width: 27px; height: 27px; }
+.conversation-log { height: 112px; overflow-y: auto; overflow-wrap: anywhere; scrollbar-color: var(--teal) transparent; }
+.conversation-turn { padding: 2px 0 8px 14px; border-left: 3px solid var(--mint); }
+.conversation-turn + .conversation-turn { margin-top: 8px; }
+.conversation-turn p { margin: 3px 0; line-height: 1.5; font-size: 1.08rem; }
 .conversation-turn strong { font-weight: 800; }
-.conversation-turn .coach-note, .coach-note { color: var(--ink-2); font-size: .85rem; }
-.voice-row { display: flex; align-items: stretch; gap: 14px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.conversation-turn .coach-note, .coach-note { color: var(--ink-2); font-size: .98rem; }
+.voice-row { display: flex; align-items: stretch; gap: 14px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
 .mic-button, .primary-button {
   display: inline-flex;
   align-items: center;
@@ -151,10 +153,14 @@
   .topbar { padding: 12px 16px; gap: 12px; }
   .status-row { gap: 6px; }
   .status-pill { font-size: .72rem; padding: 6px 9px; }
-  .scene-content { min-height: 360px; }
+  .scene-content { min-height: 0; }
   .scenario-bg { object-position: 58% center; }
   .peer-bubble { margin: 20px 20px 20px auto; }
-  .coach-dock { padding: 20px 20px 24px; }
+  .coach-dock { padding: 14px 20px 16px; }
+  .coach-label { margin-bottom: 6px; font-size: 1.35rem; }
+  .conversation-log { height: 96px; }
+  .conversation-turn p { font-size: 1rem; }
+  .conversation-turn .coach-note, .coach-note { font-size: .92rem; }
   .voice-row { flex-direction: column; }
   .mic-button { width: 100%; }
   .voice-row form { width: 100%; }
@@ -166,4 +172,11 @@
   .peer-bubble { max-width: calc(100% - 32px); margin: 16px; }
   .coach-dock { padding-inline: 16px; }
   .session-end h1 { font-size: 1.9rem; }
+}
+
+@media (max-height: 700px) {
+  .topbar { min-height: 62px; padding-block: 8px; }
+  .coach-dock { padding-block: 10px 12px; }
+  .conversation-log { height: 76px; }
+  .voice-row { margin-top: 8px; padding-top: 8px; }
 }
