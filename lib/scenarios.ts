@@ -43,7 +43,7 @@ export const playgroundScenario: ScenarioDefinition = {
     src: "/playground-scene.png",
     alt: "A sunny playground where Mia and Jordan build a castle with large blocks",
   },
-  backgroundAudio: { src: "/audio/freesound_community-playground-7156.mp3", volume: 0.35 },
+  backgroundAudio: { src: "/audio/freesound_community-playground-7156.mp3", volume: 0.8 },
   npcs: [
     {
       id: "mia",

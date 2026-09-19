@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import {
   Check,
   HeartHandshake,
-  HelpCircle,
   LogOut,
   Mic,
   MicOff,
   RotateCcw,
   Sprout,
+  Video,
+  VideoOff,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -27,7 +28,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   buildSessionSummary,
-  clampPromptLevel,
   createInitialScenarioState,
   defaultPlayerProfile,
   getPromptSupport,
@@ -415,29 +415,6 @@ export default function PlaygroundPractice() {
     recognition.start();
   };
 
-  const askForHint = () => {
-    const nextLevel = clampPromptLevel(runtimeState.promptLevel + 1);
-    const nextState = { ...runtimeState, promptLevel: nextLevel };
-    setRuntimeState(nextState);
-    setCoach((current) => ({
-      ...current,
-      state: nextState,
-      prompt: getPromptSupport(nextState.stage, nextLevel),
-      suggestions: getPromptSupport(nextState.stage, nextLevel).suggestions,
-    }));
-  };
-
-  const useSuggestion = (suggestion: Suggestion) => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(suggestion.text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.86;
-      window.speechSynthesis.speak(utterance);
-    }
-    void requestCoach(suggestion.text);
-  };
-
   const submitText = (event: FormEvent) => {
     event.preventDefault();
     void requestCoach(typedText);
@@ -505,21 +482,23 @@ export default function PlaygroundPractice() {
   const currentStage = getStageDefinition(runtimeState.stage);
   const visibleStages = stageDefinitions.filter((stage) => stage.id !== "complete");
   const currentStageIndex = visibleStages.findIndex((stage) => stage.id === runtimeState.stage);
-  const difficulty = getDifficulty(scenario, runtimeState.difficulty);
+
+  const exitPractice = () => {
+    backgroundAudioRef.current?.pause();
+    stopCamera();
+    recognitionRef.current?.stop();
+    router.push("/student");
+  };
 
   return (
     <main className="scenario-shell">
       <video ref={videoRef} className="background-monitor-video" muted playsInline aria-hidden="true" />
 
       <header className="topbar">
-        <button className="exit-button" onClick={() => finishSession(runtimeState)}>
-          <LogOut aria-hidden="true" /> Pause practice
+        <button className="exit-button" onClick={exitPractice}>
+          <LogOut aria-hidden="true" /> Exit
         </button>
-        <div className="scenario-heading">
-          <strong>{scenario.title}</strong>
-          <span>Level {runtimeState.difficulty} · {difficulty.name}</span>
-        </div>
-        <div className="status-row" aria-label="Audio controls">
+        <div className="status-row" aria-label="Practice status">
           <button
             type="button"
             className="icon-button"
@@ -531,7 +510,11 @@ export default function PlaygroundPractice() {
           </button>
           <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
             {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
-            {listening ? "Listening" : "Mic ready"}
+            <span className="status-pill__label">{listening ? "Listening" : "Mic ready"}</span>
+          </span>
+          <span className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}>
+            {cameraOn && !monitorPaused ? <Video aria-hidden="true" /> : <VideoOff aria-hidden="true" />}
+            <span className="status-pill__label">{cameraOn && !monitorPaused ? "Monitor on" : "Monitor off"}</span>
           </span>
         </div>
       </header>
@@ -562,13 +545,7 @@ export default function PlaygroundPractice() {
 
       <section className="coach-dock" aria-label="Communication coach">
         <div className="coach-head">
-          <div>
-            <h2 className="coach-label"><Sprout aria-hidden="true" /> Your communication coach</h2>
-            <p>{coach.coachNote}</p>
-          </div>
-          <div className="prompt-meter" aria-label={`Prompt level ${runtimeState.promptLevel} of 4`}>
-            {[1, 2, 3, 4].map((level) => <span key={level} className={level <= runtimeState.promptLevel ? "is-on" : ""} />)}
-          </div>
+          <h2 className="coach-label"><Sprout aria-hidden="true" /> Communication coach</h2>
         </div>
 
         <div className="conversation-log" role="log" aria-label="Conversation history" aria-busy={thinking} ref={conversationRef}>
@@ -578,30 +555,9 @@ export default function PlaygroundPractice() {
               <p><strong>{turn.npcName}:</strong> {turn.peerReply}</p>
             </div>
           ))}
+          <p className="coach-note"><strong>Coach:</strong> {coach.coachNote}</p>
           {thinking && <p className="coach-note" role="status">Thinking about what you meant…</p>}
         </div>
-
-        <div className={coach.prompt.text ? "prompt-panel" : "prompt-panel prompt-panel--quiet"}>
-          <div>
-            <span>{coach.prompt.label}</span>
-            <p>{coach.prompt.text || "Try it your way. Ask for a hint only if you want one."}</p>
-          </div>
-          <button type="button" onClick={askForHint} disabled={runtimeState.promptLevel >= 4 || thinking}>
-            <HelpCircle aria-hidden="true" /> {runtimeState.promptLevel >= 4 ? "All hints shown" : "Need a hint?"}
-          </button>
-        </div>
-
-        {coach.prompt.suggestions.length > 0 && (
-          <div className="suggestion-grid" aria-label="Example responses">
-            {coach.prompt.suggestions.map((suggestion) => (
-              <button type="button" key={`${suggestion.intent}-${suggestion.text}`} onClick={() => useSuggestion(suggestion)} disabled={thinking}>
-                <span>{suggestion.intent}</span>
-                <strong>“{suggestion.text}”</strong>
-                <small>Tap to try it</small>
-              </button>
-            ))}
-          </div>
-        )}
 
         <div className="voice-row">
           <button className={listening ? "mic-button mic-button--active" : "mic-button"} onClick={startListening} aria-pressed={listening} disabled={thinking}>

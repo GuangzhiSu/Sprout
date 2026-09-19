@@ -113,11 +113,39 @@
   display: flex; align-items: center; gap: 10px;
   padding: 5px 16px 5px 5px; border: 1px solid var(--line); border-radius: 999px; background: #fff;
 }
-.app-nav__avatar span:first-child {
+.app-nav__avatar > span:first-child {
   display: grid; place-items: center; width: 34px; height: 34px;
   border-radius: 50%; background: var(--lav); color: var(--lav-deep); font-size: .82rem; font-weight: 800;
 }
-.app-nav__avatar span:last-child { font-size: .86rem; font-weight: 700; }
+.app-nav__avatar > span:last-child { font-size: .86rem; font-weight: 700; }
+.app-nav__profile { position: relative; }
+.app-nav__profile > summary { cursor: pointer; list-style: none; }
+.app-nav__profile > summary::-webkit-details-marker { display: none; }
+.app-nav__profile[open] .app-nav__avatar {
+  border-color: rgba(29, 139, 122, .38);
+  box-shadow: 0 0 0 3px rgba(29, 139, 122, .1);
+}
+.app-nav__profile-card {
+  position: absolute; z-index: 30; top: calc(100% + 10px); right: 0;
+  width: 238px; padding: 16px;
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: #fff;
+  box-shadow: 0 16px 36px rgba(33, 74, 65, .16);
+}
+.profile-card__heading {
+  display: flex; align-items: center; gap: 11px;
+  padding-bottom: 13px; border-bottom: 1px solid var(--line);
+}
+.profile-card__heading > span {
+  display: grid; place-items: center; width: 38px; height: 38px; flex: 0 0 auto;
+  border-radius: 50%; background: var(--teal); color: #fff; font-size: .78rem; font-weight: 800;
+}
+.profile-card__heading strong { display: block; font-size: .92rem; }
+.profile-card__heading p { margin: 2px 0 0; color: var(--muted); font-size: .76rem; }
+.profile-card__details { display: grid; gap: 9px; margin: 13px 0 0; }
+.profile-card__details div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.profile-card__details dt, .profile-card__details dd { margin: 0; font-size: .78rem; }
+.profile-card__details dt { color: var(--muted); }
+.profile-card__details dd { color: var(--ink); font-weight: 700; text-align: right; }
 
 .dash a:focus-visible, .dash button:focus-visible {
   outline: 3px dashed var(--teal-deep); outline-offset: 3px;
@@ -127,6 +155,7 @@
   .app-nav { padding: 12px 16px; gap: 12px; }
   .app-nav__links { display: none; }
   .app-nav__who { display: none; }
+  .app-nav__profile-card { position: fixed; top: 68px; right: 14px; }
 }
 
 /* ---------- student view ----------
@@ -313,6 +342,7 @@ a.course-card:active { transform: translateY(2px); box-shadow: 0 4px 0 rgba(33, 
 .chart-card { padding: 22px 24px 16px; }
 .chart-card__head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .chart-card__title { font-size: 1.02rem; font-weight: 800; }
+.score-footnote-mark { margin-left: 2px; color: var(--teal-deep); }
 .chart-card__hint { color: var(--muted); font-size: .8rem; }
 .chart-card__about { margin-top: 4px; color: var(--ink-2); font-size: .85rem; }
 .chart-frame { margin-top: 14px; }
@@ -412,6 +442,11 @@ a.course-card:active { transform: translateY(2px); box-shadow: 0 4px 0 rgba(33, 
 /* footer note */
 .dash-foot { max-width: 70ch; margin-top: 8px; color: var(--muted); font-size: .76rem; line-height: 1.6; }
 .dash-foot__link { color: var(--teal-deep); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.score-disclaimer {
+  max-width: 84ch; margin: 18px 4px 0; padding: 12px 14px;
+  border-left: 3px solid var(--teal); background: rgba(231, 246, 241, .56);
+  color: var(--muted); font-size: .8rem; line-height: 1.55;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .dash *, .dash *::before, .dash *::after {

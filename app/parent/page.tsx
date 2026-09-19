@@ -109,6 +109,11 @@ export default function ParentPage() {
 
           <TotalScorePanel />
           <SubscaleDetails />
+          <p className="score-disclaimer">
+            SRS-2 scores come from the caregiver questionnaire; the status light is a CUSUM check on those
+            scores, not a diagnosis. Sprout is a research prototype. It is not a medical device and does not
+            replace professional diagnosis or intervention.
+          </p>
         </section>
 
         {/* ---------- conversations ---------- */}
@@ -121,11 +126,6 @@ export default function ParentPage() {
           <ConversationLog />
         </section>
 
-        <p className="dash-foot" id="about">
-          SRS-2 scores come from the caregiver questionnaire; the status light is a CUSUM check on
-          those scores, not a diagnosis. Sprout is a research prototype. It is not a medical device
-          and does not replace professional diagnosis or intervention.
-        </p>
       </div>
     </main>
   );

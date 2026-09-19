@@ -180,7 +180,9 @@ export function TotalScorePanel() {
   return (
     <div className="card chart-card">
       <div className="chart-card__head">
-        <h3 className="chart-card__title">SRS-2 Score</h3>
+        <h3 className="chart-card__title">
+          SRS-2 Score<span className="score-footnote-mark" aria-hidden="true">*</span>
+        </h3>
         <p className="chart-card__hint">T-score · a lower line means less difficulty</p>
       </div>
 

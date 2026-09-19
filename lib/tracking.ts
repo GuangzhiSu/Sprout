@@ -295,8 +295,8 @@ export const conversations: Conversation[] = [
    Formatting
    -------------------------------------------------------------------------- */
 
-const monthDay = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
-const fullDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" });
+const monthDay = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+const fullDate = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 /** "12 Sep" — for axis ticks and card meta. */
 export function shortDate(iso: string) {
