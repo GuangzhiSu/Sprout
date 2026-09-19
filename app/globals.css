@@ -68,6 +68,8 @@ button:focus-visible, input:focus-visible {
 }
 
 .scenario-shell {
+  display: flex;
+  flex-direction: column;
   position: relative;
   min-height: 100svh;
   overflow: hidden;
@@ -92,7 +94,7 @@ button:focus-visible, input:focus-visible {
   z-index: 4;
   min-height: 84px;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: 24px;
   padding: 14px 28px;
@@ -100,29 +102,11 @@ button:focus-visible, input:focus-visible {
   background: rgba(7, 25, 46, .63);
   backdrop-filter: blur(18px);
 }
-.brand-lockup, .brand-lockup > div, .status-row, .mission-card__topline,
-.coach-lead, .voice-row, .mic-button, .suggestion-card small, .primary-button {
+.status-row,
+.voice-row, .mic-button, .primary-button {
   display: flex;
   align-items: center;
 }
-.brand-lockup { gap: 11px; }
-.brand-lockup > div { align-items: flex-start; flex-direction: column; line-height: 1.15; }
-.brand-lockup strong { font-size: 1.08rem; }
-.brand-lockup span:not(.brand-mark) { margin-top: 4px; color: #c9d8e7; font-size: .76rem; }
-.brand-mark {
-  display: grid;
-  width: 43px;
-  height: 43px;
-  place-items: center;
-  border-radius: 15px;
-  background: #ffd761;
-  color: #16365e;
-  box-shadow: 0 8px 28px rgba(255, 207, 80, .22);
-}
-.brand-mark svg { width: 22px; }
-.scenario-title { text-align: center; }
-.scenario-title span { display: block; color: #9fc9ff; font-size: .72rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
-.scenario-title strong { display: block; margin-top: 4px; font-size: 1.05rem; }
 .status-row { justify-content: flex-end; gap: 9px; }
 .status-pill {
   display: inline-flex;
@@ -151,10 +135,11 @@ button:focus-visible, input:focus-visible {
 }
 
 .scene-content {
+  flex: 1;
   position: relative;
   z-index: 2;
-  min-height: calc(100svh - 380px);
-  padding: 32px 28px 240px;
+  min-height: 360px;
+  padding: 32px 28px;
 }
 .glass-card {
   border: 1px solid rgba(255, 255, 255, .32);
@@ -163,34 +148,11 @@ button:focus-visible, input:focus-visible {
   box-shadow: 0 22px 55px rgba(4, 18, 34, .24);
   backdrop-filter: blur(18px);
 }
-.mission-card {
-  position: absolute;
-  top: 32px;
-  left: 28px;
-  width: min(320px, calc(100vw - 56px));
-  padding: 22px;
-}
-.mission-card__topline { gap: 9px; color: #c8dcf0; font-size: .78rem; font-weight: 800; letter-spacing: .08em; }
-.step-number {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border-radius: 50%;
-  background: #ffd761;
-  color: #173657;
-}
-.mission-card h2 { max-width: 250px; margin: 15px 0 17px; font-size: clamp(1.35rem, 2vw, 1.75rem); line-height: 1.25; }
-.mission-card ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.mission-card li { display: flex; align-items: center; gap: 9px; color: #f2f7fb; font-size: .93rem; }
-.mission-card li svg { width: 18px; color: #8fe3bd; }
-.mission-note { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .13); color: #b9ccdd; font-size: .78rem; }
-
 .peer-bubble {
   position: absolute;
   top: 9%;
-  left: 58%;
-  max-width: 310px;
+  right: 294px;
+  max-width: min(310px, calc(100% - 322px));
   padding: 14px 18px 16px;
   border: 1px solid rgba(255, 255, 255, .75);
   border-radius: 22px 22px 22px 5px;
@@ -202,14 +164,11 @@ button:focus-visible, input:focus-visible {
 .peer-bubble p { margin: 5px 0 0; font-size: 1.05rem; font-weight: 800; line-height: 1.45; }
 
 .coach-dock {
-  position: absolute;
+  position: relative;
   z-index: 5;
-  right: 20px;
-  bottom: 18px;
-  left: 20px;
+  margin: 0 20px 18px;
   display: grid;
-  grid-template-columns: minmax(230px, .75fr) minmax(540px, 1.75fr);
-  grid-template-rows: auto auto;
+  grid-template-columns: minmax(0, 1fr);
   column-gap: 18px;
   padding: 18px;
   border: 1px solid rgba(255, 255, 255, .7);
@@ -219,40 +178,15 @@ button:focus-visible, input:focus-visible {
   box-shadow: 0 28px 80px rgba(4, 18, 33, .38);
   backdrop-filter: blur(22px);
 }
-.coach-lead { align-items: flex-start; gap: 13px; padding: 4px; }
-.coach-orb {
-  display: grid;
-  flex: 0 0 auto;
-  width: 45px;
-  height: 45px;
-  place-items: center;
-  border-radius: 15px;
-  background: #2367d1;
-  color: white;
-}
-.coach-orb svg { width: 21px; }
-.coach-orb--thinking { animation: gentle-pulse 1.7s ease-in-out infinite; }
-.coach-label { color: #2367d1; font-size: .72rem; font-weight: 900; letter-spacing: .08em; }
-.coach-lead p { margin: 5px 0 0; font-size: .97rem; font-weight: 750; line-height: 1.5; }
-.coach-lead small { display: block; margin-top: 5px; color: #647a92; font-size: .72rem; }
-.suggestion-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.suggestion-card {
-  min-width: 0;
-  padding: 13px 14px;
-  border: 1px solid #d4dfec;
-  border-radius: 18px;
-  background: white;
-  color: #183a63;
-  text-align: left;
-  box-shadow: 0 6px 18px rgba(22, 64, 106, .06);
-  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
-}
-.suggestion-card:hover { transform: translateY(-2px); border-color: #76aaf0; box-shadow: 0 10px 22px rgba(35, 103, 209, .12); }
-.suggestion-card--chosen { border-color: #2367d1; background: #edf5ff; }
-.suggestion-card > span { color: #6a7d92; font-size: .67rem; font-weight: 800; }
-.suggestion-card strong { display: block; margin: 6px 0 8px; overflow-wrap: anywhere; font-size: clamp(.9rem, 1.3vw, 1.04rem); line-height: 1.4; }
-.suggestion-card small { gap: 5px; color: #3673bf; font-size: .68rem; }
-.suggestion-card small svg { width: 14px; }
+.coach-label { margin: 0 0 10px; color: #2367d1; font-size: .9rem; font-weight: 800; }
+.conversation-log { max-height: 180px; overflow-y: auto; overflow-wrap: anywhere; }
+.conversation-turn + .conversation-turn { margin-top: 12px; }
+.conversation-turn p { margin: 4px 0; line-height: 1.5; }
+.coach-note { color: #647a92; font-size: .85rem; }
+.exit-button { display: inline-flex; align-items: center; gap: 8px; justify-self: start; padding: 10px 14px; border: 1px solid #c83f43; border-radius: 8px; background: #c83f43; color: white; }
+.exit-button:hover { border-color: #ad3034; background: #ad3034; }
+.exit-button svg { width: 18px; height: 18px; }
+
 .voice-row {
   grid-column: 1 / -1;
   gap: 12px;
@@ -320,36 +254,14 @@ button:focus-visible, input:focus-visible {
 .primary-button { justify-content: center; gap: 9px; min-height: 46px; margin: auto; padding: 10px 20px; border: 0; border-radius: 15px; background: #2367d1; color: white; font-weight: 800; }
 .primary-button svg { width: 18px; }
 
-@keyframes gentle-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
-
-@media (max-width: 1100px) {
-  .topbar { grid-template-columns: auto 1fr; }
-  .scenario-title { text-align: left; }
-  .status-row { grid-column: 1 / -1; justify-content: flex-start; }
-  .topbar { min-height: 118px; }
-  .scene-content { min-height: calc(100svh - 420px); }
-  .peer-bubble { top: 29%; left: auto; right: 280px; }
-  .coach-dock { grid-template-columns: 1fr; max-height: 338px; overflow-y: auto; }
-  .suggestion-grid { margin-top: 10px; }
-}
-
 @media (max-width: 760px) {
-  .scenario-shell { min-height: 1180px; overflow-y: auto; }
-  .scenario-bg { height: 560px; object-position: 60% center; }
-  .scenario-wash { height: 560px; background: linear-gradient(180deg, rgba(7, 25, 47, .82), rgba(7, 25, 47, .06) 35%, rgba(7, 25, 47, .78)); }
-  .topbar { min-height: auto; grid-template-columns: 1fr auto; gap: 12px; padding: 12px 16px; }
-  .scenario-title { grid-column: 1 / -1; grid-row: 2; }
-  .status-row { grid-column: 2; grid-row: 1; }
-  .status-pill { padding: 7px; font-size: 0; }
-  .status-row .status-pill svg { width: 18px; height: 18px; }
-  .scene-content { min-height: 490px; padding: 18px 16px 0; }
-  .mission-card { top: 18px; left: 16px; width: calc(100vw - 32px); padding: 17px; }
-  .mission-card h2 { margin: 10px 0 12px; font-size: 1.3rem; }
-  .mission-note { margin-top: 12px; }
-  .peer-bubble { top: 257px; right: 16px; left: 16px; max-width: none; padding: 11px 13px; }
-  .coach-dock { position: relative; right: auto; bottom: auto; left: auto; z-index: 5; display: block; max-height: none; margin: 0 12px 12px; padding: 15px; border-radius: 24px; }
-  .suggestion-grid { grid-template-columns: 1fr; }
-  .suggestion-card { padding: 12px 13px; }
+  .scenario-bg { object-position: 60% center; }
+  .topbar { min-height: auto; gap: 12px; padding: 12px 16px; }
+  .status-row { flex-wrap: wrap; }
+  .status-pill { padding: 7px; }
+  .scene-content { min-height: 400px; padding: 18px 16px; }
+  .peer-bubble { top: 18px; right: auto; left: 16px; max-width: calc(100% - 32px); }
+  .coach-dock { margin: 0 12px 12px; padding: 15px; border-radius: 8px; }
   .voice-row { align-items: stretch; flex-direction: column; }
   .mic-button { justify-content: center; }
   .voice-row form { width: 100%; }
@@ -358,3 +270,6 @@ button:focus-visible, input:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
+
+.icon-button { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid #ffffff45; border-radius: 14px; background: #ffffff17; color: white; }
+.icon-button svg { width: 19px; height: 19px; }

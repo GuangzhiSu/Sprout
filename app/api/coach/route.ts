@@ -9,13 +9,12 @@ Practice goal: ${scenario.modelContext.goal}
 Principles:
 1. Respect the child's choice. Never require eye contact, physical contact, or continued interaction.
 2. Use direct, concrete, friendly English. Do not infantilize, judge, or make medical claims.
-3. Each suggestion must be no more than 8 simple words, in first person, and easy to say aloud.
-4. Offer three distinct strategies: join the activity, ask a question, share an interest, or express a boundary.
-5. If the child says no, feels afraid, says it is too loud, or wants to leave, prioritize self-advocacy and exit language.
-6. Keep the peer's reply natural and brief so the conversation can continue.
+3. Keep coaching brief, concrete, and easy to understand. Do not offer reply options.
+4. If the child says no, feels afraid, says it is too loud, or wants to leave, prioritize self-advocacy and exit language.
+5. Keep the peer's reply natural and brief so the conversation can continue.
 
 Return strict JSON only, with no Markdown:
-{"heard":"brief restatement","coachNote":"one gentle and specific coaching sentence","suggestions":[{"text":"short phrase","intent":"short label"},{"text":"short phrase","intent":"short label"},{"text":"short phrase","intent":"short label"}],"peerReply":"one natural reply from the peer"}`;
+{"heard":"brief restatement","coachNote":"one gentle and specific coaching sentence","peerReply":"one natural reply from the peer"}`;
 }
 
 function extractJson(text: string) {
@@ -27,22 +26,9 @@ function extractJson(text: string) {
 }
 
 function normalize(payload: Record<string, unknown>, heard: string, scenario: ScenarioDefinition) {
-  const rawSuggestions = Array.isArray(payload.suggestions) ? payload.suggestions : [];
-  const suggestions = rawSuggestions
-    .slice(0, 3)
-    .map((item) => {
-      const value = item as Record<string, unknown>;
-      return {
-        text: String(value.text ?? "").trim().slice(0, 24),
-        intent: String(value.intent ?? "Try saying").trim().slice(0, 18),
-      };
-    })
-    .filter((item) => item.text);
-
   return {
     heard: String(payload.heard ?? heard).trim().slice(0, 120),
     coachNote: String(payload.coachNote ?? scenario.fallback.coachNote).trim().slice(0, 160),
-    suggestions: suggestions.length === 3 ? suggestions : scenario.opening.suggestions,
     peerReply: String(payload.peerReply ?? scenario.fallback.peerReply).trim().slice(0, 120),
   };
 }
@@ -65,7 +51,6 @@ export async function POST(request: Request) {
       return Response.json({
         heard: transcript,
         coachNote: scenario.fallback.coachNote,
-        suggestions: scenario.opening.suggestions,
         peerReply: scenario.fallback.peerReply,
         mode: "demo",
       });
@@ -102,6 +87,6 @@ export async function POST(request: Request) {
     return Response.json(normalize(extractJson(content), transcript, scenario));
   } catch (error) {
     console.error("coach route failed", error instanceof Error ? error.message : error);
-    return Response.json({ error: "Communication suggestions are temporarily unavailable. Please try again." }, { status: 502 });
+    return Response.json({ error: "Communication coach is temporarily unavailable. Please try again." }, { status: 502 });
   }
 }

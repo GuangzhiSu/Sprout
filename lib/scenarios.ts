@@ -1,8 +1,3 @@
-export type ScenarioSuggestion = {
-  text: string;
-  intent: string;
-};
-
 export type ScenarioDefinition = {
   id: string;
   sequenceLabel: string;
@@ -12,26 +7,15 @@ export type ScenarioDefinition = {
     src: string;
     alt: string;
   };
-  mission: {
-    step: number;
-    label: string;
-    title: string;
-    items: string[];
-    note: string;
-  };
+  backgroundAudio?: { src: string; volume: number };
   opening: {
     coachNote: string;
     peerLabel: string;
     peerReply: string;
-    suggestions: ScenarioSuggestion[];
   };
   fallback: {
     coachNote: string;
     peerReply: string;
-  };
-  peerReplies: {
-    joined: string;
-    continued: string;
   };
   modelContext: {
     scene: string;
@@ -49,34 +33,15 @@ export const playgroundScenario: ScenarioDefinition = {
     src: "/playground-scene.png",
     alt: "A sunny playground where two children build with blocks as another child walks toward them",
   },
-  mission: {
-    step: 1,
-    label: "Your mission",
-    title: "Walk over and say hello",
-    items: [
-      "Notice what they are playing",
-      "Choose one thing to say",
-      "Wait for their answer",
-    ],
-    note: "Take your time. You can pause whenever you need.",
-  },
+  backgroundAudio: { src: "/audio/freesound_community-playground-7156.mp3", volume: 0.8 },
   opening: {
     coachNote: "First, notice what they are doing. Then choose one thing you would like to say.",
     peerLabel: "Your new friend says",
     peerReply: "We’re building a castle!",
-    suggestions: [
-      { text: "Can I play with you?", intent: "Join in" },
-      { text: "What are you building?", intent: "Ask first" },
-      { text: "I like blocks too.", intent: "Share interest" },
-    ],
   },
   fallback: {
     coachNote: "You spoke up. Try a short sentence, then give the other person time to answer.",
     peerReply: "Sure! Which part would you like to build?",
-  },
-  peerReplies: {
-    joined: "Sure! You can help us build the gate.",
-    continued: "We’re building a castle. Want to see?",
   },
   modelContext: {
     scene: "A child arrives at a playground and sees two same-age peers building a castle with large blocks.",

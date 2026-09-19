@@ -2,13 +2,15 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
-  Check,
+  Camera,
+  CameraOff,
+  LogOut,
   HeartHandshake,
   Mic,
   MicOff,
   RotateCcw,
-  Sparkles,
   Volume2,
+  VolumeX,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -23,12 +25,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { playgroundScenario } from "@/lib/scenarios";
 
-type Suggestion = { text: string; intent: string };
-
 type CoachResponse = {
   heard: string;
   coachNote: string;
-  suggestions: Suggestion[];
   peerReply: string;
 };
 
@@ -69,17 +68,16 @@ declare global {
 }
 
 const scenario = playgroundScenario;
-const openingSuggestions: Suggestion[] = scenario.opening.suggestions;
 
 const openingCoach: CoachResponse = {
   heard: "",
   coachNote: scenario.opening.coachNote,
-  suggestions: openingSuggestions,
   peerReply: scenario.opening.peerReply,
 };
 
 export default function Home() {
   const [coach, setCoach] = useState<CoachResponse>(openingCoach);
+  const [conversation, setConversation] = useState<CoachResponse[]>([openingCoach]);
   const [typedText, setTypedText] = useState("");
   const [listening, setListening] = useState(false);
   const [thinking, setThinking] = useState(false);
@@ -87,20 +85,78 @@ export default function Home() {
   const [monitorPaused, setMonitorPaused] = useState(false);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState("You may need a short break.");
-  const [chosen, setChosen] = useState<string | null>(null);
   const [sessionEnded, setSessionEnded] = useState(false);
+  const [backgroundMuted, setBackgroundMuted] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const safetyTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const checkingRef = useRef(false);
+  const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
+  const conversationRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const config = scenario.backgroundAudio;
+    if (sessionEnded || !config) return;
+    const audio = new Audio(config.src);
+    audio.loop = true;
+    audio.volume = config.volume;
+    audio.preload = "none";
+    backgroundAudioRef.current = audio;
+    let disposed = false;
+    const removeInteractionListeners = () => {
+      document.removeEventListener("click", start, true);
+      document.removeEventListener("keydown", start, true);
+    };
+    const start = () => {
+      if (disposed) return;
+      void audio.play().then(() => {
+        if (disposed) audio.pause();
+        else removeInteractionListeners();
+      }).catch(() => {
+        // A missing optional track or autoplay denial must not interrupt practice.
+      });
+    };
+    const stop = () => {
+      disposed = true;
+      removeInteractionListeners();
+      audio.pause();
+      audio.currentTime = 0;
+    };
+    document.addEventListener("click", start, true);
+    document.addEventListener("keydown", start, true);
+    window.addEventListener("pagehide", stop);
+    return () => {
+      stop();
+      window.removeEventListener("pagehide", stop);
+      audio.removeAttribute("src");
+      audio.load();
+      backgroundAudioRef.current = null;
+    };
+  }, [sessionEnded]);
+
+  useEffect(() => {
+    if (backgroundAudioRef.current) {
+      backgroundAudioRef.current.muted = backgroundMuted;
+    }
+  }, [backgroundMuted, sessionEnded]);
+
+  const toggleBackgroundMuted = () => {
+    const muted = !backgroundMuted;
+    if (backgroundAudioRef.current) backgroundAudioRef.current.muted = muted;
+    setBackgroundMuted(muted);
+  };
+
+  useEffect(() => {
+    const log = conversationRef.current;
+    if (log) log.scrollTop = log.scrollHeight;
+  }, [conversation]);
 
   const requestCoach = useCallback(async (transcript: string) => {
     const clean = transcript.trim();
     if (!clean) return;
     setThinking(true);
-    setChosen(null);
     try {
       const response = await fetch("/api/coach", {
         method: "POST",
@@ -116,15 +172,17 @@ export default function Home() {
       const result = (await response.json()) as CoachResponse & { error?: string };
       if (!response.ok) throw new Error(result.error || "No response received");
       setCoach(result);
+      setConversation((current) => [...current, { ...result, heard: clean }]);
       setNotice(null);
     } catch {
-      setCoach({
+      const fallback = {
         heard: clean,
         coachNote: scenario.fallback.coachNote,
-        suggestions: openingSuggestions,
         peerReply: scenario.fallback.peerReply,
-      });
-      setNotice("The connection is unstable, so we kept a few practice ideas ready.");
+      };
+      setCoach(fallback);
+      setConversation((current) => [...current, fallback]);
+      setNotice("The connection is unstable. Showing an offline practice reply.");
     } finally {
       setThinking(false);
     }
@@ -252,7 +310,7 @@ export default function Home() {
       void Promise.resolve(context.registerTool({
         name: "start_playground_practice",
         title: "Start playground practice",
-        description: "Reset and start the playground peer-communication practice with the current mission and opening reply suggestions.",
+        description: "Reset and start the playground peer-communication practice with the opening conversation.",
         inputSchema: { type: "object", properties: {}, additionalProperties: false },
         annotations: { readOnlyHint: false, untrustedContentHint: false },
         execute: (input) => {
@@ -265,7 +323,7 @@ export default function Home() {
             throw new Error("This action does not accept input.");
           }
           setCoach(openingCoach);
-          setChosen(null);
+          setConversation([openingCoach]);
           setSessionEnded(false);
           return { scenario: "playground", status: "ready" };
         },
@@ -281,24 +339,8 @@ export default function Home() {
     void requestCoach(typedText);
   };
 
-  const speakSuggestion = (suggestion: Suggestion) => {
-    setChosen(suggestion.text);
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(suggestion.text);
-      utterance.lang = "en-US";
-      utterance.rate = 0.86;
-      window.speechSynthesis.speak(utterance);
-    }
-    setCoach((current) => ({
-      ...current,
-      peerReply: suggestion.text.includes("play")
-        ? scenario.peerReplies.joined
-        : scenario.peerReplies.continued,
-    }));
-  };
-
   const endSession = () => {
+    backgroundAudioRef.current?.pause();
     stopCamera();
     recognitionRef.current?.stop();
     setSessionEnded(true);
@@ -316,7 +358,7 @@ export default function Home() {
           <button className="primary-button" onClick={() => {
             setSessionEnded(false);
             setCoach(openingCoach);
-            setChosen(null);
+            setConversation([openingCoach]);
             setTypedText("");
           }}>
             <RotateCcw aria-hidden="true" /> Start again
@@ -333,40 +375,32 @@ export default function Home() {
       <video ref={videoRef} className="background-monitor-video" muted playsInline aria-hidden="true" />
 
       <header className="topbar">
-        <div className="brand-lockup">
-          <span className="brand-mark"><Sparkles aria-hidden="true" /></span>
-          <div>
-            <strong>Play Together</strong>
-            <span>Social communication practice</span>
-          </div>
-        </div>
-        <div className="scenario-title">
-          <span>{scenario.sequenceLabel}</span>
-          <strong>{scenario.title}</strong>
-        </div>
+        <button className="exit-button" onClick={endSession}>
+          <LogOut aria-hidden="true" /> Exit
+        </button>
         <div className="status-row" aria-label="Device status">
+          <button
+            type="button"
+            className="icon-button"
+            onClick={toggleBackgroundMuted}
+            aria-label="Mute background audio"
+            aria-pressed={backgroundMuted}
+            title={backgroundMuted ? "Unmute background audio" : "Mute background audio"}
+          >
+            {backgroundMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+          </button>
           <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
             {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
             {listening ? "Listening" : "Mic ready"}
+          </span>
+          <span className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}>
+            {cameraOn ? <Camera aria-hidden="true" /> : <CameraOff aria-hidden="true" />}
+            {cameraOn ? (monitorPaused ? "Monitor paused" : "Monitor on") : "Monitor off"}
           </span>
         </div>
       </header>
 
       <section className="scene-content" aria-label={scenario.sceneAriaLabel}>
-        <aside className="mission-card glass-card">
-          <div className="mission-card__topline">
-            <span className="step-number">{scenario.mission.step}</span>
-            <span>{scenario.mission.label}</span>
-          </div>
-          <h2>{scenario.mission.title}</h2>
-          <ul>
-            {scenario.mission.items.map((item) => (
-              <li key={item}><Check aria-hidden="true" /> {item}</li>
-            ))}
-          </ul>
-          <p className="mission-note">{scenario.mission.note}</p>
-        </aside>
-
         <div className="peer-bubble" role="status" aria-live="polite">
           <span>{scenario.opening.peerLabel}</span>
           <p>“{coach.peerReply}”</p>
@@ -375,34 +409,20 @@ export default function Home() {
       </section>
 
       <section className="coach-dock" aria-label="Communication coach">
-        <div className="coach-lead">
-          <div className={thinking ? "coach-orb coach-orb--thinking" : "coach-orb"}>
-            <Sparkles aria-hidden="true" />
-          </div>
-          <div>
-            <span className="coach-label">Communication coach</span>
-            <p>{thinking ? "I’m finding words that are easy to say…" : coach.coachNote}</p>
-            {coach.heard && <small>I heard: {coach.heard}</small>}
-          </div>
-        </div>
-
-        <div className="suggestion-grid" aria-live="polite" aria-busy={thinking}>
-          {coach.suggestions.slice(0, 3).map((suggestion) => (
-            <button
-              key={`${suggestion.intent}-${suggestion.text}`}
-              className={chosen === suggestion.text ? "suggestion-card suggestion-card--chosen" : "suggestion-card"}
-              onClick={() => speakSuggestion(suggestion)}
-              disabled={thinking}
-            >
-              <span>{suggestion.intent}</span>
-              <strong>“{suggestion.text}”</strong>
-              <small><Volume2 aria-hidden="true" /> Tap to hear it</small>
-            </button>
+        <h2 className="coach-label">Communication coach</h2>
+        <div className="conversation-log" role="log" aria-label="Conversation history" aria-busy={thinking} ref={conversationRef}>
+          {conversation.map((turn, index) => (
+            <div className="conversation-turn" key={index}>
+              {turn.heard && <p><strong>You:</strong> {turn.heard}</p>}
+              <p><strong>Friend:</strong> {turn.peerReply}</p>
+              <p className="coach-note"><strong>Coach:</strong> {turn.coachNote}</p>
+            </div>
           ))}
         </div>
+        {thinking && <p className="coach-note" role="status">Thinking...</p>}
 
         <div className="voice-row">
-          <button className={listening ? "mic-button mic-button--active" : "mic-button"} onClick={startListening} aria-pressed={listening}>
+          <button className={listening ? "mic-button mic-button--active" : "mic-button"} onClick={startListening} aria-pressed={listening} disabled={thinking}>
             {listening ? <MicOff aria-hidden="true" /> : <Mic aria-hidden="true" />}
             <span>{listening ? "Tap to stop" : "Press, then say what you think"}</span>
           </button>
@@ -415,7 +435,7 @@ export default function Home() {
               placeholder="Or type what you want to say…"
               maxLength={120}
             />
-            <button type="submit" disabled={!typedText.trim() || thinking}>Get ideas</button>
+            <button type="submit" disabled={!typedText.trim() || thinking}>Send</button>
           </form>
         </div>
         {notice && <p className="notice" role="status">{notice}</p>}
