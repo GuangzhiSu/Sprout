@@ -47,6 +47,7 @@
 }
 .tut__dots li { width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 2px rgba(47, 115, 134, .25); }
 .tut__dots li.is-done { background: var(--teal-deep); box-shadow: none; }
+.tut__dots li.is-now { width: 13px; height: 13px; background: #fff; box-shadow: inset 0 0 0 4px var(--teal-deep); }
 
 .tut__skip {
   padding: 8px 16px; border-radius: 999px; background: rgba(255, 255, 255, .92);

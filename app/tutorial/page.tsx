@@ -128,9 +128,16 @@ export default function TutorialPage() {
         <span className="tut__brand">
           <Sparkles aria-hidden="true" /> Sprout
         </span>
+        {/* One dot per step: filled for the ones behind, ringed for the one
+            being shown. The row is never entirely filled while the tour is
+            still running. */}
         <ol className="tut__dots" aria-label={`Step ${index + 1} of ${STEPS.length}`}>
           {STEPS.map((id, position) => (
-            <li key={id} className={position <= index ? "is-done" : undefined} aria-hidden="true" />
+            <li
+              key={id}
+              className={position < index ? "is-done" : position === index ? "is-now" : undefined}
+              aria-hidden="true"
+            />
           ))}
         </ol>
         <button
