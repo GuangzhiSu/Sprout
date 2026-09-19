@@ -11,6 +11,8 @@ The complete product and conversation design—including NPCs, state machine, di
 | Route | Who it is for | What it does |
 | --- | --- | --- |
 | `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practise, or the grown-ups' panel. They are the only place the child and the caregiver are told apart, so nothing in between asks again. |
+| `/tutorial` | the child | The first run: who they are, then what the app can do. Sends anyone who has already done it on to `/student`. |
+| `/feedback/` | the child | Static celebration (`public/feedback/`) after a practice, and after the tutorial with `?tutorial=1`. |
 | `/student` | the child | Scenario cards grouped by level. Tapping a ready card opens the practice screen. |
 | `/parent` | the caregiver | Status overview, SRS-2 score tracking with subscale detail, recent conversations. |
 | `/practice?scenario=playground` | the child | The practice screen itself: scene, coach, input controls, and safety monitor. |
@@ -26,6 +28,37 @@ view turns the same palette down, because it is read rather than played with.
 The parent view's last panel is the conversation itself, not a video: the session list on
 one side, the transcript on the other, with the child's turns and the other child's on
 opposite sides and the coach's prompts between them.
+
+## Tutorial
+
+`Start now!` on the landing page opens `/tutorial`, not the dashboard. A first-timer
+gets eight short steps, one question or one thing to try per screen, on the practice
+screen's own stage so that nothing is new when the real practice starts:
+
+1. Hello — who Sprout is, and that it is short.
+2. Their name, or "I'd rather not say".
+3. Their age, as buttons rather than a typed field.
+4. What they like, as many or as few as they want.
+5. The reply cards: tap one and hear it read aloud.
+6. Their voice: press the microphone and say hello, with typing as the fallback when
+   the browser cannot listen or the child would rather not.
+7. That stopping is allowed, and how.
+8. Done — on to `/feedback/?tutorial=1`, which greets them by name, says what they
+   learned, and points at their first card.
+
+The tour is offered once. Finishing it or skipping it both count, and `/tutorial`
+then redirects to `/student`; "Watch the tour again" at the foot of the dashboard
+reopens it with `?again=1`.
+
+## What Sprout knows about the child
+
+`lib/profile.ts` holds the name, age and interests collected in the tutorial, in the
+browser, beside the course progress — this is a prototype, there are no accounts, and
+a child's details should not sit on a server that does not need them. They leave the
+device in one place only: `app/api/coach/route.ts` adds a line to the system prompt so
+the coach can use their name and pitch its wording for their age. Every field is
+optional, every read and write is guarded, and clearing the browser's storage clears
+the lot.
 
 ## Course catalogue
 

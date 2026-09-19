@@ -17,7 +17,8 @@ assets/app.js     tapping the mascot changes its line
 
 A child on the spectrum, usually with a parent nearby. That decides the design:
 
-- **Two doors, nothing else.** `Start now!` opens `/student` for the child and
+- **Two doors, nothing else.** `Start now!` opens `/tutorial` for the child —
+  which greets a first-timer and sends everyone else on to `/student` — and
   `See the tracking panel` opens `/parent` for the grown-up. The doors are the
   only place the two are told apart, so nothing in between asks again. No
   feature lists, no marketing copy, no scrolling required to reach either one.

@@ -19,11 +19,46 @@
   var scenario = cleanLabel(params.get("scenario"), "Playground", 32);
   var minutes = positiveNumber(params.get("minutes"), 6, 180);
   var turns = positiveNumber(params.get("turns"), 4, 100);
-  document.getElementById("minutesValue").textContent = minutes + (minutes === 1 ? " min" : " min");
-  document.getElementById("turnsValue").textContent = turns + (turns === 1 ? " turn" : " turns");
 
-  var practiceAgain = document.getElementById("practiceAgain");
-  practiceAgain.href = "/practice?scenario=" + encodeURIComponent(scenario.toLowerCase());
+  function setText(id, value) {
+    var node = document.getElementById(id);
+    if (node) node.textContent = value;
+  }
+
+  /* The same celebration serves the end of the tutorial, where the numbers are
+     not minutes and turns and the next step is the dashboard rather than one
+     more run of the same scenario. */
+  if (params.get("tutorial") === "1") {
+    var name = cleanLabel(params.get("name"), "", 24);
+
+    setText("eyebrowText", "tutorial complete");
+    setText("rewardTitle", name ? "You're all set, " + name + "!" : "You're all set!");
+
+    var practiceAgain = document.getElementById("practiceAgain");
+    practiceAgain.href = "/student";
+    setText("primaryIcon", "→");
+    setText("primaryTitle", "See my courses");
+    setText("primaryNote", "Your first card is waiting");
+
+    var secondary = document.getElementById("secondaryAction");
+    if (secondary) secondary.href = "/tutorial?again=1";
+    setText("secondaryIcon", "↻");
+    setText("secondaryTitle", "Do the tour again");
+    setText("secondaryNote", "Watch it one more time");
+
+    setText("summaryEyebrow", "What you learned");
+    setText("summaryTitle", "Now you know how Sprout works");
+    setText("minutesValue", "Your break");
+    setText("minutesLabel", "stop whenever you want");
+    setText("turnsValue", "Your words");
+    setText("turnsLabel", "I give you things to say");
+    setText("braveValue", "Your voice");
+    setText("braveLabel", "Talk out loud, or type instead");
+  } else {
+    setText("minutesValue", minutes + " min");
+    setText("turnsValue", turns + (turns === 1 ? " turn" : " turns"));
+    document.getElementById("practiceAgain").href = "/practice?scenario=" + encodeURIComponent(scenario.toLowerCase());
+  }
 
   var canvas = document.getElementById("celebration");
   if (!canvas || reduceMotion) return;

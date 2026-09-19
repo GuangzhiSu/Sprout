@@ -9,7 +9,7 @@
    re-theme is one block.
    ========================================================================== */
 
-.dash, .scenario-shell, .safety-dialog {
+.dash, .scenario-shell, .safety-dialog, .tut {
   /* product palette (mirrors public/landing/assets/styles.css) */
   --teal:       #7CBFD0;
   --teal-soft:  #E4F2F6;
@@ -411,6 +411,7 @@ a.course-card:active { transform: translateY(2px); box-shadow: 0 4px 0 rgba(33, 
 
 /* footer note */
 .dash-foot { max-width: 70ch; margin-top: 8px; color: var(--muted); font-size: .76rem; line-height: 1.6; }
+.dash-foot__link { color: var(--teal-deep); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   .dash *, .dash *::before, .dash *::after {

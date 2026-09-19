@@ -12,6 +12,7 @@ import {
   type Course,
   type CourseState,
 } from "@/lib/courses";
+import { profileSnapshot, serverProfileSnapshot, subscribeProfile } from "@/lib/profile";
 import { progressSnapshot, serverProgressSnapshot, subscribeProgress } from "@/lib/progress";
 import { playgroundScenario } from "@/lib/scenarios";
 
@@ -24,6 +25,7 @@ export default function StudentPage() {
   /* Progress lives in the browser, so the first paint shows a fresh start and
      the real state arrives as soon as the store can be read. */
   const completed = useSyncExternalStore(subscribeProgress, progressSnapshot, serverProgressSnapshot);
+  const profile = useSyncExternalStore(subscribeProfile, profileSnapshot, serverProfileSnapshot);
 
   const states = courseStates(completed);
   const openLevels = levelStates(completed);
@@ -48,7 +50,9 @@ export default function StudentPage() {
                   ? `Next up: ${next.name}.`
                   : "The next card is still being made."}
             </p>
-            <h1 className="sv__hello display">Ready to practise?</h1>
+            <h1 className="sv__hello display">
+              {profile.name ? `Ready to practise, ${profile.name}?` : "Ready to practise?"}
+            </h1>
             <p className="sv__line">Pick the card that is lit up. You can stop whenever you want.</p>
           </div>
         </section>
@@ -95,7 +99,8 @@ export default function StudentPage() {
 
         <section id="help">
           <p className="dash-foot">
-            Need help? Ask the grown-up next to you — they can open the tracking panel from the
+            <a className="dash-foot__link" href="/tutorial?again=1">Watch the tour again</a> if you would
+            like a reminder of how this works. Need help? Ask the grown-up next to you — they can open the tracking panel from the
             same screen. Sprout is a research prototype. It is not a medical device and does not
             replace professional diagnosis or intervention.
           </p>

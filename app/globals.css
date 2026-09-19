@@ -4,6 +4,7 @@
 @import "../vendor/shadcn-tailwind-4.13.0.css";
 @import "./dashboard.css";
 @import "./scenario.css";
+@import "./tutorial.css";
 
 :root {
   --background: #f5f8fc;

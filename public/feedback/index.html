@@ -47,17 +47,17 @@
         </div>
       </div>
 
-      <p class="eyebrow"><span aria-hidden="true">✓</span> practice complete</p>
+      <p class="eyebrow"><span aria-hidden="true">✓</span> <span id="eyebrowText">practice complete</span></p>
       <h1 id="rewardTitle">You did it!</h1>
 
       <div class="actions" aria-label="What would you like to do next?">
         <a class="action action--primary" id="practiceAgain" href="/practice?scenario=playground">
-          <span class="action__icon" aria-hidden="true">↻</span>
-          <span><strong>Practise again</strong><small>Try the playground one more time</small></span>
+          <span class="action__icon" id="primaryIcon" aria-hidden="true">↻</span>
+          <span><strong id="primaryTitle">Practise again</strong><small id="primaryNote">Try the playground one more time</small></span>
         </a>
-        <a class="action action--secondary" href="/student">
-          <span class="action__icon" aria-hidden="true">⌂</span>
-          <span><strong>All done</strong><small>Go back to the scenario list</small></span>
+        <a class="action action--secondary" id="secondaryAction" href="/student">
+          <span class="action__icon" id="secondaryIcon" aria-hidden="true">⌂</span>
+          <span><strong id="secondaryTitle">All done</strong><small id="secondaryNote">Go back to the scenario list</small></span>
         </a>
       </div>
     </section>
@@ -66,7 +66,7 @@
       <div class="summary__heading">
         <span class="summary__icon" aria-hidden="true">★</span>
         <div>
-          <p>Today’s practice</p>
+          <p id="summaryEyebrow">Today’s practice</p>
           <h2 id="summaryTitle">A little step worth celebrating</h2>
         </div>
       </div>
@@ -74,15 +74,15 @@
       <div class="stats">
         <div class="stat">
           <span class="stat__art stat__art--clock" aria-hidden="true"></span>
-          <div><strong id="minutesValue">6 min</strong><span>practising together</span></div>
+          <div><strong id="minutesValue">6 min</strong><span id="minutesLabel">practising together</span></div>
         </div>
         <div class="stat">
           <span class="stat__art stat__art--bubbles" aria-hidden="true"></span>
-          <div><strong id="turnsValue">4 turns</strong><span>trying words and replies</span></div>
+          <div><strong id="turnsValue">4 turns</strong><span id="turnsLabel">trying words and replies</span></div>
         </div>
         <div class="stat stat--wide">
           <span class="stat__art stat__art--heart" aria-hidden="true">♥</span>
-          <div><strong>One brave step</strong><span>Showing up and trying counts</span></div>
+          <div><strong id="braveValue">One brave step</strong><span id="braveLabel">Showing up and trying counts</span></div>
         </div>
       </div>
     </section>

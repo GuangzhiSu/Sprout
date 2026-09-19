@@ -38,6 +38,7 @@ import {
   type ScenarioRuntimeState,
   type SessionSummary,
 } from "@/lib/playground-engine";
+import { profileForModel, profileSnapshot } from "@/lib/profile";
 import { markCourseComplete } from "@/lib/progress";
 import { getDifficulty, playgroundScenario } from "@/lib/scenarios";
 
@@ -360,6 +361,9 @@ export default function PlaygroundPractice() {
           context: {
             recentTurns: conversation.slice(-4).map((turn) => `${turn.heard ? `Child: ${turn.heard}. ` : ""}${turn.npcName}: ${turn.peerReply}`),
           },
+          // Name, age and interests from the tutorial, so the coach can speak
+          // to this child rather than a generic one.
+          profile: profileForModel(profileSnapshot()),
         }),
       });
       const result = (await response.json()) as CoachResponse & { error?: string };

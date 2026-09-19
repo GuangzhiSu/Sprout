@@ -136,7 +136,20 @@ async function analyzeInteraction(
   }
 }
 
-function npcPrompt(scenario: ScenarioDefinition, state: ScenarioRuntimeState) {
+type ChildProfile = { name?: string; age?: number | null; likes?: string[] };
+
+/** One line about the child, or nothing when they told us nothing. */
+function describeChild(profile?: ChildProfile) {
+  if (!profile) return "";
+  const parts: string[] = [];
+  if (profile.name) parts.push(`is called ${profile.name}`);
+  if (typeof profile.age === "number") parts.push(`is ${profile.age} years old`);
+  if (profile.likes?.length) parts.push(`likes ${profile.likes.slice(0, 6).join(", ")}`);
+  if (parts.length === 0) return "";
+  return `\nThe child ${parts.join(", ")}. Use their name now and then, pitch the wording for their age, and mention what they like only when it fits the scene.`;
+}
+
+function npcPrompt(scenario: ScenarioDefinition, state: ScenarioRuntimeState, profile?: ChildProfile) {
   const difficulty = getDifficulty(scenario, state.difficulty);
   const speaker = scenario.npcs.find((npc) => npc.name === state.speaker) ?? scenario.npcs[0];
   return `You are the NPC Language Model in a structured child-centered practice game. The Scenario Manager has already chosen the stage, branch, difficulty, speaker, and required move. You may choose natural wording only; do not change those controls.
@@ -147,7 +160,7 @@ Personality: ${speaker.personality}
 Current goal: ${speaker.currentGoal}
 Difficulty: Level ${difficulty.level} — ${difficulty.name}
 NPC initiative at this level: ${speaker.proactiveByDifficulty[state.difficulty]}
-Required NPC move: ${requiredNpcMove(state)}
+Required NPC move: ${requiredNpcMove(state)}${describeChild(profile)}
 
 Rules:
 - Sound like a child, not a therapist or teacher.
@@ -183,12 +196,14 @@ async function generateNpcLanguage(args: {
   state: ScenarioRuntimeState;
   analysis: InteractionAnalysis;
   recentTurns: string[];
+  /** Name, age and interests, collected in the tutorial and kept on the device. */
+  profile?: ChildProfile;
 }) {
   const fallback = fallbackLanguage(args.state, args.analysis);
   if (!process.env.ARK_API_KEY) return { language: fallback, live: false };
   try {
     const payload = await askArk(
-      npcPrompt(args.scenario, args.state),
+      npcPrompt(args.scenario, args.state, args.profile),
       `State: ${JSON.stringify({
         stage: args.state.stage,
         branch: args.state.branch,
@@ -214,10 +229,20 @@ export async function POST(request: Request) {
       responseLatencyMs?: number;
       state?: unknown;
       context?: { recentTurns?: string[] };
+      profile?: ChildProfile;
     };
     const scenario = getScenario(body.scenarioId ?? "");
     if (!scenario) return Response.json({ error: "This scenario is not available." }, { status: 400 });
     const transcript = body.transcript?.trim().slice(0, 280) ?? "";
+    const profile: ChildProfile | undefined = body.profile
+      ? {
+          name: typeof body.profile.name === "string" ? body.profile.name.trim().slice(0, 24) : undefined,
+          age: typeof body.profile.age === "number" && Number.isFinite(body.profile.age) ? body.profile.age : null,
+          likes: Array.isArray(body.profile.likes)
+            ? body.profile.likes.filter((like) => typeof like === "string").slice(0, 6)
+            : undefined,
+        }
+      : undefined;
     if (!transcript) return Response.json({ error: "Say or type something first." }, { status: 400 });
     const stateBefore = normalizeState(body.state);
     if (stateBefore.stage === "complete") {
@@ -234,6 +259,7 @@ export async function POST(request: Request) {
       recentTurns: Array.isArray(body.context?.recentTurns)
         ? body.context.recentTurns.map(String).slice(-6).map((turn) => turn.slice(0, 220))
         : [],
+      profile,
     });
 
     if (body.sessionId && /^[a-zA-Z0-9-]{8,80}$/.test(body.sessionId)) {
