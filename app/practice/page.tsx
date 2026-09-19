@@ -38,6 +38,46 @@ import { profileForModel, profileSnapshot } from "@/lib/profile";
 import { markCourseComplete } from "@/lib/progress";
 import { getDifficulty, playgroundScenario } from "@/lib/scenarios";
 
+// Facial-expression safety check runs fully in the browser: the camera frame
+// never leaves the device. We only watch the face for a clear upset expression
+// (crying / pain) and deliberately ignore everything a face-only FER model
+// cannot judge (pose, falls, hazards, looking away, and so on).
+const FACE_MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model";
+const DISTRESS_THRESHOLD = 0.5; // min probability for an upset expression
+const DISTRESS_STREAK = 1; // consecutive checks required before alerting
+const SAFETY_INTERVAL_MS = 2500;
+
+let faceApiPromise: Promise<typeof import("@vladmandic/face-api")> | null = null;
+async function loadFaceApi() {
+  if (!faceApiPromise) {
+    faceApiPromise = (async () => {
+      console.log("[FER] loading library + weights from", FACE_MODEL_URL);
+      const faceapi = await import("@vladmandic/face-api");
+      try {
+        await Promise.all([
+          faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
+          faceapi.nets.faceExpressionNet.loadFromUri(FACE_MODEL_URL),
+        ]);
+      } catch (error) {
+        console.error("[FER] model weights failed to load", error);
+        throw error;
+      }
+      const tf = faceapi.tf as unknown as { getBackend?: () => string };
+      console.log("[FER] models ready", {
+        backend: tf.getBackend?.(),
+        tinyFaceDetector: faceapi.nets.tinyFaceDetector.isLoaded,
+        faceExpressionNet: faceapi.nets.faceExpressionNet.isLoaded,
+      });
+      return faceapi;
+    })();
+    // A load failure must not permanently poison the cache; allow a later retry.
+    faceApiPromise.catch(() => {
+      faceApiPromise = null;
+    });
+  }
+  return faceApiPromise;
+}
+
 type Suggestion = { text: string; intent: string };
 
 type CoachResponse = {
@@ -58,25 +98,7 @@ type ConversationTurn = {
   peerReply: string;
 };
 
-type BrowserSpeechRecognition = {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  start: () => void;
-  stop: () => void;
-  onresult: ((event: { results: ArrayLike<{ 0: { transcript: string }; isFinal: boolean }> }) => void) | null;
-  onerror: (() => void) | null;
-  onend: (() => void) | null;
-};
-
-type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
-
 declare global {
-  interface Window {
-    SpeechRecognition?: SpeechRecognitionConstructor;
-    webkitSpeechRecognition?: SpeechRecognitionConstructor;
-  }
-
   interface Document {
     modelContext?: {
       registerTool: (
@@ -138,9 +160,12 @@ export default function PlaygroundPractice() {
   const [notice, setNotice] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const safetyTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const checkingRef = useRef(false);
+  const distressStreakRef = useRef(0);
   const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
   const conversationRef = useRef<HTMLDivElement>(null);
   const sessionIdRef = useRef("");
@@ -222,28 +247,63 @@ export default function PlaygroundPractice() {
   }, [conversation]);
 
   const analyzeFrame = useCallback(async () => {
-    if (!videoRef.current || !cameraOn || monitorPaused || checkingRef.current) return;
-    const video = videoRef.current;
-    if (video.readyState < 2 || video.videoWidth === 0) return;
-    checkingRef.current = true;
-    try {
-      const canvas = document.createElement("canvas");
-      canvas.width = 480;
-      canvas.height = Math.round((480 * video.videoHeight) / video.videoWidth);
-      canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const response = await fetch("/api/safety", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenarioId: scenario.id, imageDataUrl: canvas.toDataURL("image/jpeg", 0.68) }),
+    if (!videoRef.current || !cameraOn || monitorPaused || checkingRef.current) {
+      console.debug("[FER] skip cycle", {
+        hasVideo: !!videoRef.current,
+        cameraOn,
+        monitorPaused,
+        alreadyChecking: checkingRef.current,
       });
-      const result = (await response.json()) as { alert?: boolean; reason?: string };
-      if (response.ok && result.alert) {
-        setSafetyReason(result.reason || "You may need a short break.");
+      return;
+    }
+    const video = videoRef.current;
+    if (video.readyState < 2 || video.videoWidth === 0) {
+      console.debug("[FER] video not ready", {
+        readyState: video.readyState,
+        videoWidth: video.videoWidth,
+        paused: video.paused,
+      });
+      return;
+    }
+    checkingRef.current = true;
+    const startedAt = performance.now();
+    try {
+      const faceapi = await loadFaceApi();
+      const detection = await faceapi
+        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
+        .withFaceExpressions();
+      if (!detection) {
+        // No confident face in frame is never, on its own, a reason to alert.
+        console.log(`[FER] no face detected (${(performance.now() - startedAt).toFixed(0)}ms)`);
+        distressStreakRef.current = 0;
+        return;
+      }
+      // Crying / clear pain reads as a strong sad, fearful, or angry expression.
+      // A neutral or looking-away face stays well below the threshold.
+      const e = detection.expressions;
+      const distress = Math.max(e.sad, e.fearful, e.angry);
+      distressStreakRef.current = distress >= DISTRESS_THRESHOLD ? distressStreakRef.current + 1 : 0;
+      console.log("[FER] detection", {
+        ms: Number((performance.now() - startedAt).toFixed(0)),
+        faceScore: Number(detection.detection.score.toFixed(3)),
+        distress: Number(distress.toFixed(3)),
+        threshold: DISTRESS_THRESHOLD,
+        streak: `${distressStreakRef.current}/${DISTRESS_STREAK}`,
+        sad: Number(e.sad.toFixed(3)),
+        angry: Number(e.angry.toFixed(3)),
+        fearful: Number(e.fearful.toFixed(3)),
+        neutral: Number(e.neutral.toFixed(3)),
+        happy: Number(e.happy.toFixed(3)),
+      });
+      if (distressStreakRef.current >= DISTRESS_STREAK) {
+        distressStreakRef.current = 0;
+        console.warn("[FER] distress threshold met -> opening break dialog");
+        setSafetyReason("If you don't feel well right now, we can take a short break.");
         setSafetyOpen(true);
         setMonitorPaused(true);
       }
-    } catch {
-      // Monitoring stays silent unless a clear concern is detected.
+    } catch (error) {
+      console.error("[FER] detection failed", error);
     } finally {
       checkingRef.current = false;
     }
@@ -256,6 +316,11 @@ export default function PlaygroundPractice() {
     if (safetyTimerRef.current) clearInterval(safetyTimerRef.current);
     safetyTimerRef.current = null;
     setCameraOn(false);
+  }, []);
+
+  const stopAudioStream = useCallback(() => {
+    audioStreamRef.current?.getTracks().forEach((track) => track.stop());
+    audioStreamRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -290,8 +355,10 @@ export default function PlaygroundPractice() {
 
   useEffect(() => {
     if (!cameraOn || monitorPaused) return;
+    void loadFaceApi().catch(() => undefined); // warm the model before the first check (errors logged inside)
+    distressStreakRef.current = 0;
     const firstCheck = setTimeout(() => void analyzeFrame(), 1800);
-    safetyTimerRef.current = setInterval(() => void analyzeFrame(), 10_000);
+    safetyTimerRef.current = setInterval(() => void analyzeFrame(), SAFETY_INTERVAL_MS);
     return () => {
       clearTimeout(firstCheck);
       if (safetyTimerRef.current) clearInterval(safetyTimerRef.current);
@@ -300,7 +367,8 @@ export default function PlaygroundPractice() {
   }, [analyzeFrame, cameraOn, monitorPaused]);
 
   useEffect(() => () => {
-    recognitionRef.current?.stop();
+    if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop();
+    audioStreamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current?.getTracks().forEach((track) => track.stop());
   }, []);
 
@@ -312,7 +380,8 @@ export default function PlaygroundPractice() {
     setSafetyOpen(false);
     backgroundAudioRef.current?.pause();
     stopCamera();
-    recognitionRef.current?.stop();
+    if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop();
+    stopAudioStream();
     void fetch("/api/progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -338,7 +407,7 @@ export default function PlaygroundPractice() {
       completed: nextSummary.activityCompleted ? "1" : "0",
     });
     router.replace(`/feedback/?${params.toString()}`);
-  }, [router, stopCamera]);
+  }, [router, stopCamera, stopAudioStream]);
 
   const requestCoach = useCallback(async (transcript: string) => {
     const clean = transcript.trim();
@@ -383,38 +452,56 @@ export default function PlaygroundPractice() {
     }
   }, [conversation, finishSession, runtimeState, thinking]);
 
-  const startListening = () => {
-    if (listening) {
-      recognitionRef.current?.stop();
-      return;
-    }
-    const Recognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    if (!Recognition) {
-      setNotice("Voice recognition is not available in this browser. You can type instead.");
-      return;
-    }
-    const recognition = new Recognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    recognition.onresult = (event) => {
-      const transcript = Array.from(event.results).map((result) => result[0]?.transcript ?? "").join("").trim();
-      setListening(false);
-      if (!transcript) {
-        setNotice("I didn’t catch that. Try again, or type your words below.");
-        return;
-      }
-      void requestCoach(transcript);
-    };
-    recognition.onerror = () => {
+  const transcribeAndCoach = useCallback(async (blob: Blob) => {
+    if (!blob.size) return;
+    try {
+      const type = blob.type || "audio/webm";
+      const ext = type.includes("ogg") ? "ogg" : type.includes("mp4") ? "mp4" : "webm";
+      const form = new FormData();
+      form.append("audio", blob, `speech.${ext}`);
+      const response = await fetch("/api/transcribe", { method: "POST", body: form });
+      const result = (await response.json()) as { transcript?: string; error?: string };
+      if (!response.ok || !result.transcript) throw new Error(result.error || "No transcript");
+      setNotice(null);
+      await requestCoach(result.transcript);
+    } catch {
       setNotice("I didn’t catch that. Try again, or type your words below.");
+    }
+  }, [requestCoach]);
+
+  const startListening = async () => {
+    if (listening) {
+      mediaRecorderRef.current?.stop();
+      return;
+    }
+    if (typeof MediaRecorder === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setNotice("Voice recording is not available in this browser. You can type instead.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioStreamRef.current = stream;
+      audioChunksRef.current = [];
+      const recorder = new MediaRecorder(stream);
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+        audioChunksRef.current = [];
+        stopAudioStream();
+        setListening(false);
+        void transcribeAndCoach(blob);
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setListening(true);
+      setNotice(null);
+    } catch {
+      stopAudioStream();
       setListening(false);
-    };
-    recognition.onend = () => setListening(false);
-    recognitionRef.current = recognition;
-    setListening(true);
-    setNotice(null);
-    recognition.start();
+      setNotice("The microphone is unavailable. Check the browser permission, or type below.");
+    }
   };
 
   const submitText = (event: FormEvent) => {
@@ -454,7 +541,8 @@ export default function PlaygroundPractice() {
   const exitPractice = () => {
     backgroundAudioRef.current?.pause();
     stopCamera();
-    recognitionRef.current?.stop();
+    if (mediaRecorderRef.current?.state === "recording") mediaRecorderRef.current.stop();
+    stopAudioStream();
     router.push("/student");
   };
 

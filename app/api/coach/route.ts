@@ -40,6 +40,11 @@ async function askArk(system: string, user: string, temperature: number, maxToke
       ],
       temperature,
       max_tokens: maxTokens,
+      // Doubao-seed-2.0 defaults to a thinking mode that adds ~20s per call, and
+      // each turn makes two calls (analyzer + NPC), so leaving it on costs ~40s.
+      // Both calls are short, structured, and fully governed by their prompts, so
+      // reasoning depth buys little while the latency badly hurts a live loop.
+      thinking: { type: "disabled" },
     }),
   });
   const result = (await response.json()) as {
