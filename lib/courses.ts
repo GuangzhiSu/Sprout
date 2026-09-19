@@ -1,7 +1,9 @@
 /**
  * Course catalogue for the student view.
  *
- * Courses are grouped into levels. A course either points at a scenario that
+ * Courses are grouped into levels and are taken in order: a course opens only
+ * once every course before it is finished, and a level opens only once the
+ * level before it is complete. A course either points at a scenario that
  * exists in `lib/scenarios.ts` (`scenarioId` set) or is still being written
  * (`scenarioId: null`), in which case the card says so instead of pretending.
  */
@@ -103,17 +105,105 @@ export const levels: LevelWithCourses[] = [
       },
     ],
   },
+  {
+    id: "level-3",
+    label: "Level 3",
+    name: "Sorting it out",
+    goal: "Fix a small mix-up, say sorry, and make a plan with someone.",
+    courses: [
+      {
+        id: "someone-is-upset",
+        name: "Notice someone is upset",
+        blurb: "Your friend has gone quiet. Ask what happened.",
+        scenarioId: null,
+        minutes: 6,
+        emoji: "🫂",
+        tile: "sky",
+      },
+      {
+        id: "saying-sorry",
+        name: "Say sorry",
+        blurb: "You knocked over their tower by accident.",
+        scenarioId: null,
+        minutes: 5,
+        emoji: "🧱",
+        tile: "blush",
+      },
+      {
+        id: "making-a-plan",
+        name: "Make a plan together",
+        blurb: "You both want to play, but different games.",
+        scenarioId: null,
+        minutes: 7,
+        emoji: "🗺️",
+        tile: "mint",
+      },
+    ],
+  },
 ];
 
-/** Where a course card goes when it is tapped. */
-export function courseHref(course: Course) {
-  return course.scenarioId ? `/?scenario=${course.scenarioId}` : null;
-}
-
+/** Every course, in the order they are taken. */
 export function listCourses(): Course[] {
   return levels.flatMap((level) => level.courses);
 }
 
 export function getCourse(id: string): Course | null {
   return listCourses().find((course) => course.id === id) ?? null;
+}
+
+/** Where a course card goes when it is tapped. */
+export function courseHref(course: Course) {
+  return course.scenarioId ? `/?scenario=${course.scenarioId}` : null;
+}
+
+export type CourseState =
+  /** Finished — it stays open, so it can be practised again. */
+  | "done"
+  /** The one to do next. */
+  | "current"
+  /** Open, but the scenario behind it is not written yet. */
+  | "soon"
+  /** Not open until the courses before it are finished. */
+  | "locked";
+
+export type LevelState = "open" | "locked";
+
+/**
+ * Work out where a child is.
+ *
+ * One rule covers both the course order and the level order: a course is open
+ * only when every course before it in the catalogue is finished. So Level 2
+ * opens exactly when the last course of Level 1 is done.
+ */
+export function courseStates(completed: readonly string[]): Record<string, CourseState> {
+  const done = new Set(completed);
+  const states: Record<string, CourseState> = {};
+  let reachedTheEdge = false;
+
+  for (const course of listCourses()) {
+    if (done.has(course.id)) {
+      states[course.id] = "done";
+      continue;
+    }
+    if (reachedTheEdge) {
+      states[course.id] = "locked";
+      continue;
+    }
+    // The first unfinished course is the one to do next.
+    reachedTheEdge = true;
+    states[course.id] = course.scenarioId ? "current" : "soon";
+  }
+
+  return states;
+}
+
+/** A level is open once its first course is. */
+export function levelStates(completed: readonly string[]): Record<string, LevelState> {
+  const states = courseStates(completed);
+  return Object.fromEntries(
+    levels.map((level) => [
+      level.id,
+      level.courses.some((course) => states[course.id] !== "locked") ? "open" : "locked",
+    ]),
+  );
 }

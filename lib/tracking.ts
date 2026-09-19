@@ -232,49 +232,86 @@ export function buildOverview(): Overview {
 }
 
 /* --------------------------------------------------------------------------
-   Recordings
+   Conversations
    -------------------------------------------------------------------------- */
 
-export type Recording = {
+export type Turn = {
+  /** Who is speaking: the child, the peer in the scenario, or the coach. */
+  from: "child" | "peer" | "coach";
+  text: string;
+};
+
+export type Conversation = {
   id: string;
   /** Course id from `lib/courses.ts`. */
   courseId: string;
   courseName: string;
   date: string;
-  /** Length of the recording, in seconds. */
+  /** How long the session ran, in seconds. */
   seconds: number;
-  /** What happened, in one line. */
+  /** What happened, in one line — the list shows this before the transcript. */
   note: string;
-  emoji: string;
+  turns: Turn[];
 };
 
-export const recordings: Recording[] = [
+/**
+ * What a parent opens instead of a video: the words themselves. Sample
+ * transcripts from the playground scenario, newest first.
+ */
+export const conversations: Conversation[] = [
   {
-    id: "rec-2026-09-12",
+    id: "chat-2026-09-12",
     courseId: "playground",
     courseName: "Meet friends at the playground",
     date: "2026-09-12",
     seconds: 284,
     note: "Said hello first and waited for the answer.",
-    emoji: "🏰",
+    turns: [
+      { from: "coach", text: "First, notice what they are doing. Then choose one thing you would like to say." },
+      { from: "peer", text: "We're building a castle!" },
+      { from: "child", text: "Can I play with you?" },
+      { from: "peer", text: "Sure! You can help us build the gate." },
+      { from: "coach", text: "You asked, and then you waited for the answer. That is the hard part, and you did it." },
+      { from: "child", text: "I want to build the gate." },
+      { from: "peer", text: "Put the blue block on top!" },
+      { from: "child", text: "Okay. Like this?" },
+      { from: "peer", text: "Yes! Now it's tall." },
+    ],
   },
   {
-    id: "rec-2026-09-05",
+    id: "chat-2026-09-05",
     courseId: "playground",
     courseName: "Meet friends at the playground",
     date: "2026-09-05",
     seconds: 331,
-    note: "Asked one question, then paused for a break.",
-    emoji: "🏰",
+    note: "Asked one question, then asked for a break.",
+    turns: [
+      { from: "coach", text: "Notice what they are playing, then choose one thing to say." },
+      { from: "peer", text: "We're building a castle!" },
+      { from: "child", text: "What are you building?" },
+      { from: "peer", text: "A castle with a big gate. Do you want to help?" },
+      { from: "child", text: "It is very loud here." },
+      { from: "coach", text: "Saying that was a good idea. You can ask for a quiet minute whenever you need one." },
+      { from: "child", text: "Can we stop for a bit?" },
+      { from: "peer", text: "Okay. I'll keep your blocks for you." },
+    ],
   },
   {
-    id: "rec-2026-08-29",
+    id: "chat-2026-08-29",
     courseId: "playground",
     courseName: "Meet friends at the playground",
     date: "2026-08-29",
     seconds: 247,
     note: "Chose a reply from the suggestions and read it aloud.",
-    emoji: "🏰",
+    turns: [
+      { from: "coach", text: "Here are three things you could say. Tap one to hear how it sounds." },
+      { from: "peer", text: "We're building a castle!" },
+      { from: "child", text: "I like blocks too." },
+      { from: "peer", text: "We're building a castle. Want to see?" },
+      { from: "child", text: "Yes." },
+      { from: "coach", text: "You answered straight away. Next time you could add one more word, like \u201cyes please\u201d." },
+      { from: "peer", text: "Come on, it's over here." },
+    ],
   },
 ];
 

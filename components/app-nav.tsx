@@ -16,7 +16,7 @@ const links: Record<Props["variant"], NavLink[]> = {
   ],
   parent: [
     { label: "Overview", href: "/parent" },
-    { label: "Recordings", href: "/parent#recordings" },
+    { label: "Conversations", href: "/parent#conversations" },
     { label: "About the scores", href: "/parent#about" },
   ],
 };
@@ -59,7 +59,7 @@ export function AppNav({ variant, current }: Props) {
           </>
         ) : (
           <>
-            <a className="app-nav__icon" href="/parent#recordings" aria-label="Recent activity">
+            <a className="app-nav__icon" href="/parent#conversations" aria-label="Recent activity">
               <Bell aria-hidden="true" />
             </a>
             <a className="app-nav__avatar" href="/choose">

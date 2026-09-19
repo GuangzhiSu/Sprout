@@ -24,6 +24,7 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { markCourseComplete } from "@/lib/progress";
 import { playgroundScenario } from "@/lib/scenarios";
 
 type CoachResponse = {
@@ -358,6 +359,8 @@ export default function Home() {
     backgroundAudioRef.current?.pause();
     stopCamera();
     recognitionRef.current?.stop();
+    // Reaching the end opens the next card on the student dashboard.
+    markCourseComplete(scenario.id);
     setSessionEnded(true);
     setSafetyOpen(false);
   };

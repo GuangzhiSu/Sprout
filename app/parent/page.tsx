@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { ArrowDown, CircleAlert, CircleCheck, Play, TriangleAlert } from "lucide-react";
+import { ArrowDown, CircleAlert, CircleCheck, TriangleAlert } from "lucide-react";
 import { AppNav } from "@/components/app-nav";
 import { StatusChip } from "@/components/status-chip";
+import { ConversationLog } from "@/components/conversation-log";
 import { SubscaleDetails, TotalScorePanel } from "@/components/tracking";
-import { buildOverview, duration, longDate, recordings, totalScore } from "@/lib/tracking";
+import { buildOverview, longDate, totalScore } from "@/lib/tracking";
 
 export const metadata: Metadata = {
   title: "Tracking panel · Sprout",
@@ -115,29 +116,14 @@ export default function ParentPage() {
           <SubscaleDetails />
         </section>
 
-        {/* ---------- recordings ---------- */}
-        <section className="panel" id="recordings" aria-labelledby="recordings-heading">
+        {/* ---------- conversations ---------- */}
+        <section className="panel" id="conversations" aria-labelledby="conversations-heading">
           <div className="panel__head">
-            <h2 className="panel__label" id="recordings-heading">Recent Course Recordings</h2>
-            <p className="panel__note">Sessions saved on this device. Playback is not enabled in the prototype yet.</p>
+            <h2 className="panel__label" id="conversations-heading">Recent Conversations</h2>
+            <p className="panel__note">What was said, turn by turn — pick a session to read it</p>
           </div>
 
-          <div className="rec-grid">
-            {recordings.map((recording) => (
-              <article className="card rec-card" key={recording.id}>
-                <div className="rec-card__tile">
-                  <span className="rec-card__emoji" aria-hidden="true">{recording.emoji}</span>
-                  <span className="rec-card__play" aria-hidden="true"><Play /></span>
-                  <span className="rec-card__length">{duration(recording.seconds)}</span>
-                </div>
-                <div className="rec-card__body">
-                  <h3 className="rec-card__name">{recording.courseName}</h3>
-                  <p className="rec-card__note">{recording.note}</p>
-                  <p className="rec-card__date">{longDate(recording.date)}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+          <ConversationLog />
         </section>
 
         <p className="dash-foot" id="about">

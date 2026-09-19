@@ -11,24 +11,42 @@ The interface accepts speech or typed input, asks the Doubao Ark model for three
 | `/landing/` | the child | Static landing page (`public/landing/`). Two doors: practise, or the grown-ups' panel. |
 | `/choose` | either | One question — child or parent — between the landing page and the two dashboards. |
 | `/student` | the child | Scenario cards grouped by level. Tapping a ready card opens the practice screen. |
-| `/parent` | the caregiver | Status overview, SRS-2 score tracking with subscale detail, recent session recordings. |
+| `/parent` | the caregiver | Status overview, SRS-2 score tracking with subscale detail, recent conversations. |
 | `/` | the child | The practice screen itself: scene, coach, suggestions, safety monitor. |
 
 Both dashboards share `components/app-nav.tsx` and the stylesheet `app/dashboard.css`, which
 repeats the landing page's palette as CSS variables so a re-theme stays in one place. The
-student view keeps the landing page's pastel world; the parent view turns the same palette
-down, because it is read rather than played with.
+student view is built from the landing page's own shapes — white-rimmed cards that press
+when tapped, Baloo headings, the same mascot — because it is the child's screen. The parent
+view turns the same palette down, because it is read rather than played with.
+
+The parent view's last panel is the conversation itself, not a video: the session list on
+one side, the transcript on the other, with the child's turns and the other child's on
+opposite sides and the coach's prompts between them.
 
 ## Course catalogue
 
-`lib/courses.ts` lists the levels and their courses. A course either points at a scenario
-registered in `lib/scenarios.ts` or carries `scenarioId: null`, and the card then says
-"Coming soon" instead of linking somewhere that does not exist yet.
+`lib/courses.ts` lists the three levels and their courses, in the order they are
+taken. One rule covers both the course order and the level order: a course opens only
+when every course before it in the catalogue is finished, so Level 2 opens exactly when
+the last course of Level 1 is done. A card is therefore in one of four states — done,
+current (the one lit up), coming soon (open, but the scenario is not written yet), or
+locked.
+
+A course either names a scenario registered in `lib/scenarios.ts` or carries
+`scenarioId: null`. Only `playground` exists today, so the second card of Level 1 reads
+"Coming soon" once the first is finished, and the later levels stay locked until those
+scenarios are written.
+
+Progress lives in the browser (`lib/progress.ts`, a `localStorage`-backed external store
+read with `useSyncExternalStore`), not in an account: reaching the end of a practice
+session marks that course finished on that device, and nothing more. Every read and
+write is guarded, since storage can be blocked.
 
 ## Tracking
 
 `lib/tracking.ts` holds the SRS-2 T-scores (total plus the five subscales), the sample
-recordings, and the CUSUM used for the status light. Higher scores mean more reported
+conversations, and the CUSUM used for the status light. Higher scores mean more reported
 difficulty, so a line going down is progress.
 
 The status light is a tabular CUSUM, not a threshold on the latest score: the first four
