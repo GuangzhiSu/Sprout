@@ -9,6 +9,8 @@ import {
   Mic,
   MicOff,
   Sprout,
+  Video,
+  VideoOff,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -479,6 +481,10 @@ export default function PlaygroundPractice() {
           <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
             {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
             <span className="status-pill__label">{listening ? "Listening" : "Mic ready"}</span>
+          </span>
+          <span className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}>
+            {cameraOn && !monitorPaused ? <Video aria-hidden="true" /> : <VideoOff aria-hidden="true" />}
+            <span className="status-pill__label">{cameraOn && !monitorPaused ? "Monitor on" : "Monitor off"}</span>
           </span>
         </div>
       </header>
