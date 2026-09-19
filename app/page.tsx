@@ -2,16 +2,11 @@
 
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import {
-  Camera,
-  CameraOff,
   Check,
   HeartHandshake,
   Mic,
   MicOff,
-  Pause,
-  Play,
   RotateCcw,
-  ShieldCheck,
   Sparkles,
   Volume2,
 } from "lucide-react";
@@ -92,7 +87,6 @@ export default function Home() {
   const [monitorPaused, setMonitorPaused] = useState(false);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [safetyReason, setSafetyReason] = useState("You may need a short break.");
-  const [lastChecked, setLastChecked] = useState("Not started");
   const [chosen, setChosen] = useState<string | null>(null);
   const [sessionEnded, setSessionEnded] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -190,14 +184,13 @@ export default function Home() {
         reason?: string;
         confidence?: number;
       };
-      setLastChecked("Checked just now");
       if (response.ok && result.alert) {
         setSafetyReason(result.reason || "You may need a short break.");
         setSafetyOpen(true);
         setMonitorPaused(true);
       }
     } catch {
-      setLastChecked("Check unavailable");
+      // The background monitor stays unobtrusive when a check is unavailable.
     } finally {
       checkingRef.current = false;
     }
@@ -210,14 +203,10 @@ export default function Home() {
     if (safetyTimerRef.current) clearInterval(safetyTimerRef.current);
     safetyTimerRef.current = null;
     setCameraOn(false);
-    setLastChecked("Not started");
   }, []);
 
-  const startCamera = async () => {
-    if (cameraOn) {
-      stopCamera();
-      return;
-    }
+  const startBackgroundMonitor = useCallback(async () => {
+    if (streamRef.current || !navigator.mediaDevices?.getUserMedia) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
@@ -230,12 +219,14 @@ export default function Home() {
       }
       setCameraOn(true);
       setMonitorPaused(false);
-      setLastChecked("Getting ready");
-      setNotice(null);
     } catch {
-      setNotice("The camera is unavailable. Check browser permission and try again.");
+      // Camera access is optional. Do not interrupt the practice experience.
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!sessionEnded) void startBackgroundMonitor();
+  }, [sessionEnded, startBackgroundMonitor]);
 
   useEffect(() => {
     if (!cameraOn || monitorPaused) return;
@@ -339,6 +330,7 @@ export default function Home() {
     <main className="scenario-shell">
       <img className="scenario-bg" src={scenario.image.src} alt={scenario.image.alt} />
       <div className="scenario-wash" aria-hidden="true" />
+      <video ref={videoRef} className="background-monitor-video" muted playsInline aria-hidden="true" />
 
       <header className="topbar">
         <div className="brand-lockup">
@@ -356,10 +348,6 @@ export default function Home() {
           <span className={listening ? "status-pill status-pill--active" : "status-pill"}>
             {listening ? <Mic aria-hidden="true" /> : <MicOff aria-hidden="true" />}
             {listening ? "Listening" : "Mic ready"}
-          </span>
-          <span className={cameraOn && !monitorPaused ? "status-pill status-pill--safe" : "status-pill"}>
-            {cameraOn ? <Camera aria-hidden="true" /> : <CameraOff aria-hidden="true" />}
-            {cameraOn ? (monitorPaused ? "Monitor paused" : "Safety monitor on") : "Monitor off"}
           </span>
         </div>
       </header>
@@ -384,33 +372,6 @@ export default function Home() {
           <p>“{coach.peerReply}”</p>
         </div>
 
-        <aside className="safety-card glass-card" aria-label="Safety monitor">
-          <div className="safety-card__heading">
-            <div><ShieldCheck aria-hidden="true" /><strong>Safety companion</strong></div>
-            <button className="icon-button" onClick={() => void startCamera()} aria-label={cameraOn ? "Turn off camera" : "Turn on camera"}>
-              {cameraOn ? <CameraOff aria-hidden="true" /> : <Camera aria-hidden="true" />}
-            </button>
-          </div>
-          <div className={cameraOn ? "camera-frame camera-frame--on" : "camera-frame"}>
-            <video ref={videoRef} muted playsInline aria-label="Safety-monitor camera preview" />
-            {!cameraOn && (
-              <button onClick={() => void startCamera()}>
-                <Camera aria-hidden="true" />
-                <span>Start visual check</span>
-              </button>
-            )}
-          </div>
-          <div className="safety-meta">
-            <span>{lastChecked}</span>
-            {cameraOn && (
-              <button onClick={() => setMonitorPaused((value) => !value)}>
-                {monitorPaused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
-                {monitorPaused ? "Resume" : "Pause"}
-              </button>
-            )}
-          </div>
-          <p>Supportive alerts only. This does not replace a caregiver or professional judgment.</p>
-        </aside>
       </section>
 
       <section className="coach-dock" aria-label="Communication coach">
@@ -460,7 +421,10 @@ export default function Home() {
         {notice && <p className="notice" role="status">{notice}</p>}
       </section>
 
-      <AlertDialog open={safetyOpen} onOpenChange={setSafetyOpen}>
+      <AlertDialog open={safetyOpen} onOpenChange={(open) => {
+        setSafetyOpen(open);
+        if (!open) setMonitorPaused(false);
+      }}>
         <AlertDialogContent className="safety-dialog">
           <AlertDialogHeader>
             <AlertDialogMedia className="safety-dialog__icon"><HeartHandshake aria-hidden="true" /></AlertDialogMedia>
